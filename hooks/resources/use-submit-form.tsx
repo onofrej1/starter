@@ -5,17 +5,17 @@ import {
 import { useState } from "react";
 import { deleteFile, uploadFiles } from "@/actions/files";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { DrizzleResource, saveData } from "@/actions/resources";
+import { DrizzleResource, createResource, updateResource } from "@/actions/resources";
 //import { MutationFunction } from "@/api";
 
-type MutationFunction = typeof saveData;
+type MutationFunction = typeof createResource | typeof updateResource;
 
 export function useSubmitForm(resource: DrizzleResource, fields: FormField[], mutationFn: MutationFunction) {
   const queryClient = useQueryClient();
   type Status = 'success' | 'error' | 'idle';
 
   const [status, setStatus] = useState<Status>("idle");
-  const [responseData, setResponseData] = useState<Awaited<ReturnType<typeof saveData>>>();
+  const [responseData, setResponseData] = useState<Awaited<ReturnType<MutationFunction>>>();
 
   const { mutate } = useMutation({
     mutationFn,
@@ -56,7 +56,7 @@ export function useSubmitForm(resource: DrizzleResource, fields: FormField[], mu
         await uploadFiles(uploadData);
       }
 
-      mutate({ resource, data });
+      return mutate({ resource, data });
   };
 
   return { submitForm, status, responseData };

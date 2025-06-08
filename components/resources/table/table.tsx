@@ -7,7 +7,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import ResourceFormDialog from "../form-dialog";
 import { TableData } from "@/types/resources";
 import { ResourceContext, useContext } from "@/resource-context";
-import { use, useCallback, useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { DataTableAdvancedToolbar } from "@/components/data-table/data-table-advanced-toolbar";
 import { DataTableFilterList } from "@/components/data-table/data-table-filter-list";
 import { DataTableSortList } from "@/components/data-table/data-table-sort-list";
@@ -16,7 +16,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { DataTableToolbar } from "@/components/data-table/data-table-toolbar";
 
 interface TableProps {
-  dataPromise: Promise<{ data: any; numPages: number }>;
+  dataPromise: Promise<{ data: TableData[]; numPages: number }>;
 }
 
 export function Table(props: TableProps) {
@@ -26,7 +26,7 @@ export function Table(props: TableProps) {
 
   const queryClient = useQueryClient();
 
-  const [open, setOpen] = useState(false);
+  //const [open, setOpen] = useState(false);
 
   const { data, numPages: pageCount } = use(props.dataPromise);
   const [initialized, setInitialized] = useState(false);
@@ -45,11 +45,11 @@ export function Table(props: TableProps) {
   }, [queryClient, resource]);
 
 
-  useEffect(() => {
+  /*useEffect(() => {
     if (rowAction?.variant === 'update') {
       setOpen(true);
     }
-  }, [rowAction?.variant]);
+  }, [rowAction?.variant]);*/
 
   const { table } = useDataTable({
     data,
@@ -64,7 +64,7 @@ export function Table(props: TableProps) {
     shallow: false,
     clearOnDefault: true,
   });
-  const onOpenChange = useCallback(() => setRowAction(null), [rowAction?.variant]);
+  //const onOpenChange = useCallback(() => setRowAction(null), [rowAction?.variant]);
 
   //const open = useMemo(() => rowAction?.variant === "update", [rowAction?.variant]);
   
@@ -86,9 +86,9 @@ export function Table(props: TableProps) {
       </DataTable>      
         <ResourceFormDialog
           key="updateResource"
-          open={open}
-          onOpenChange={onOpenChange}
-          //onOpenChange={() => setRowAction(null)}
+          open={rowAction?.variant === "update"}
+          //onOpenChange={onOpenChange}
+          onOpenChange={() => setRowAction(null)}
           id={rowAction?.row.original.id}
         />
       

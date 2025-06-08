@@ -1,6 +1,6 @@
 //import { FormField, TableData } from "@/types/resources";
 import { FilterVariant } from "@/types/data-table";
-import { eq, ilike, ne } from "drizzle-orm";
+import { eq, ilike, ne, Table } from "drizzle-orm";
 
 export function getOrderBy(input: string) {
   if (!input) {
@@ -13,21 +13,22 @@ export function getOrderBy(input: string) {
 
 export type Filter = {
   id: string;
-  value: string;
+  value: string | string[];
   operator: string;  
   variant: FilterVariant;
   search: string;
 }
 
-export function getWhereQuery(filters: Filter[], entity: any) {
+export function getWhereQuery(filters: Filter[], entity: Table) {
   if (!filters) {
     return [];
   }
   
   //const filters: Filter[] /*Filter<TableData>[]*/ = JSON.parse(input);
-  const query: any[] = [];
+  //
+  const query: any[] = []; // eslint-disable-line
 
-  const oper: any = {
+  const oper: Record<string, typeof eq | typeof ne | typeof ilike> = {
     eq,
     ne,
     ilike,

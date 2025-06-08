@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Trash2, Upload, File as FileIcon } from "lucide-react";
 import { formatFileSize, generateVideoThumbnail, urlToFile } from "@/lib/utils";
 import { ControllerRenderProps } from "react-hook-form";
+import Image from "next/image";
 
 interface FileUploaderProps {
   field: ControllerRenderProps;
@@ -36,7 +37,7 @@ export default function FileUploader(props: FileUploaderProps) {
   useEffect(() => {
     if (field.value?.file) {
       setFile(field.value.file);
-    } else if (field.value && typeof field.value === 'string') {
+    } else if (field.value && typeof field.value === "string") {
       getFile(field.value).then((file) => {
         const fieldValue = { file, previousFile: file, isDirty: false };
 
@@ -44,7 +45,7 @@ export default function FileUploader(props: FileUploaderProps) {
         setFile(file);
       });
     }
-  }, [field.value]);
+  }, [field, field.value]);
 
   const handleFileChange = async (
     event: React.ChangeEvent<HTMLInputElement>
@@ -106,16 +107,21 @@ export default function FileUploader(props: FileUploaderProps) {
         <div className="flex flex-col justify-center">
           {isImage(file.type) && (
             <div className="grid grid-cols-1 mb-2">
-              <img className="w-full" src={URL.createObjectURL(file)} />
+              <Image
+                alt=""
+                className="w-full"
+                src={URL.createObjectURL(file)}
+              />
             </div>
           )}
 
           {isVideo(file.type) && (
             <div className="grid grid-cols-1 mb-2">
-              <img
+              <Image
+                alt=""
                 ref={imageRef}
                 src="/assets/images/upload.png"
-                width={"100%"}
+                //width={"100%"}
               />
             </div>
           )}

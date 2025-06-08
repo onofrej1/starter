@@ -27,7 +27,7 @@ import Switch from "./base/switch";
 import { z } from "zod";
 
 export interface DefaultFormData {
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export type actionResult = {
@@ -50,7 +50,7 @@ interface FormProps {
   fields: FormField_[];
   validation?: Rules;
   data?: DefaultFormData;
-  action?: (...args: any[]) => any;
+  action?: (data: Record<string, unknown>) => Promise<actionResult>;
   buttons?: ((props: Partial<FormState<DefaultFormData>>) => JSX.Element)[];
   render?: FormRender;
   children?: FormRender;
@@ -69,13 +69,13 @@ export default function Form_({
 
   const form = useForm({
     mode: "onSubmit",
-    resolver: zodResolver((validation as any) || z.any()),
+    resolver: zodResolver((validation) || z.any()),
     defaultValues: data,
   });
 
   useEffect(() => {
     form.reset(data);
-  }, [data]);
+  }, [data, form]);
 
   const { isValid, errors, isLoading } = form.formState;
 
@@ -83,12 +83,12 @@ export default function Form_({
     console.log("Validation errors:", errors);
   }
 
-  const submitForm = async (data: unknown) => {
+  const submitForm = async (data: Record<string, unknown>) => {
     console.log(data);
     if (!action) return;
 
     try {
-      const response: actionResult = await action(data);
+      const response = await action(data);
       if (!response) {
         return;
       }
@@ -208,24 +208,24 @@ export default function Form_({
           />
         )}
 
-        {type === "manyToMany" && (
+        {/*type === "manyToMany" && (
           <FormField
             control={form.control}
             name={name}
             render={({ field }) => {
               return (
                 <>
-                  {/*<MultipleSelector
+                  {<MultipleSelector
                     field={field}
                     label={label}
                     className={className}
                     options={formField.options!}
-                  />*/}
+                  />}
                 </>
               );
             }}
           />
-        )}
+        )*/}
 
         {type === "richtext" && (
           <FormField

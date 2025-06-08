@@ -9,6 +9,7 @@ import ResourceForm from "@/components/resources/form-dialog";
 //import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton";
 import { ResourceContext, useContext } from "@/resource-context";
 import { getAll } from "@/actions/resources";
+import { Filter } from "@/lib/resources";
 
 export default function Resource() {
   const searchParams = useSearchParams();
@@ -26,7 +27,7 @@ export default function Resource() {
     filters,
   } = Object.fromEntries(searchParams.entries());
 
-  const baseFilters: any[] = [];
+  const baseFilters: Filter[] = [];
   if (!advancedFilter) {
     list.map(col => col.filter).filter(Boolean).forEach((field) => {
       const value = searchParams.get(field.name);
@@ -46,12 +47,12 @@ export default function Resource() {
   const skip = (Number(page) || 1) - 1;
   const take = Number(perPage) || 10;
 
-  let filtersParsed: any[] = [];
+  let filtersParsed: Filter[] = [];
   try { 
     filtersParsed = JSON.parse(filters);
   } catch {}
 
-  let sortParsed: any[] = [];
+  let sortParsed: { id: string, desc: boolean }[] = [];
   try {
     sortParsed = JSON.parse(sort);
   } catch {}
@@ -104,14 +105,14 @@ export default function Resource() {
             </div>
           }
         >
-          <Table dataPromise={promise as any} />
+          <Table dataPromise={promise} />
         </React.Suspense>
 
-        {/*<ResourceForm
+        <ResourceForm
           key="addResource"
           open={openAddItem}
           onOpenChange={() => setOpenAddItem(false)}
-        />*/}
+        />
       </div>
     </div>
   );

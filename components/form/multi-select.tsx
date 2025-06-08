@@ -32,9 +32,9 @@ export function MultiSelect(props: MultiSelectProps) {
   const { label, options, field } = props;
   const [open, setOpen] = React.useState(false);
 
-  React.useEffect(() => {
+  /*React.useEffect(() => {
     field.onChange(value);
-  }, []);
+  }, []);*/
 
   const handleSelect = (selected: string) => {
     if (value.includes(selected)) {

@@ -34,7 +34,7 @@ export default function ResourceFormDialog(props: ResourceFormDialogProps) {
 
   console.log('form dialog');
   
-  const { resource: { form, relations, resource, rules, renderForm } } = useContext(ResourceContext);
+  const { resource: { form, /*relations,*/ resource, rules, renderForm } } = useContext(ResourceContext);
 
   const { data = {} } = useQuery({
     //initialData: {},
@@ -48,12 +48,13 @@ export default function ResourceFormDialog(props: ResourceFormDialogProps) {
   //const { fields, data: updatedData } = useRelationFields(form, data);
   //const { data: formData } = useRichtextFields(form, data /*updatedData*/);
   const { submitForm, status } = useSubmitForm(resource, form /*fields*/, !!id ? updateResource : createResource);
-
+  console.log(submitForm);
+  
   useEffect(() => {
     if (status === 'success') {
       onOpenChange?.(false);
     }
-  }, [status]);
+  }, [onOpenChange, status]);
 
   const idField: FormField = { name: "id", type: "hidden" };
 
@@ -68,7 +69,7 @@ export default function ResourceFormDialog(props: ResourceFormDialogProps) {
           validation={rules}
           data={data}
           render={renderForm}
-          action={submitForm}
+          //action={submitForm}
         />
       </DialogContent>
     </Dialog>

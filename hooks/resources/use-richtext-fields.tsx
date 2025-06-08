@@ -1,4 +1,4 @@
-"use client";
+/*"use client";
 import { FormField } from "@/types/resources";
 import { useEffect, useState } from "react";
 
@@ -28,4 +28,4 @@ export function useRichtextFields(
   }, [formFields, formData]);
 
   return { data };
-}
+}*/

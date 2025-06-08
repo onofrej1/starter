@@ -50,14 +50,14 @@ export default function MediaUploader(props: FileUploaderProps) {
     }
   };
 
-  const handleDrop = (event: any) => {
+  /*const handleDrop = (event: any) => {
     event.preventDefault();
     const droppedFiles = event.dataTransfer.files as File[];
     console.log(droppedFiles);
     if (droppedFiles.length > 0) {
       const newFiles = Array.from(droppedFiles);
     }
-  };
+  };*/
 
   const removeFile = (file: File) => {
     const files = selectedFiles.filter((f) => f.name !== file.name);
@@ -73,7 +73,7 @@ export default function MediaUploader(props: FileUploaderProps) {
     <div className="border border-gray p-3">
       <div
         className="flex items-center justify-center w-full mb-3"
-        onDrop={handleDrop}
+        //onDrop={handleDrop}
         onDragOver={(event) => event.preventDefault()}
       >
         <label
