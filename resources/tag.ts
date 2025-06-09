@@ -1,12 +1,12 @@
+import { tags } from "@/db/schema";
 import { Resource } from "@/types/resources";
 import { CreateTag } from "@/validation";
 
-const tag: Resource = {
+const tag: Resource<typeof tags> = {
   name: "Tag",
   name_plural: "Tags",
   model: "tag",
   resource: "tags",
-  filter: [],
   menuIcon: "",
   rules: CreateTag,
   form: [{ name: "title", type: "text", label: "Title" }],

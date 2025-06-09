@@ -1,22 +1,22 @@
 //import { toggleEnableComments, updateStatus } from "@/actions/posts";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
+//import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
-import { TableData } from "@/types/resources";
+import { posts } from "@/db/schema";
 import { Resource } from "@/types/resources";
 import { CreatePost } from "@/validation";
-import {
+/*import {
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
   DropdownMenuSub,
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "@/components/ui/dropdown-menu";*/
 //import { toast } from "sonner";
 //import { getErrorMessage } from "@/lib/utils";
 import React from "react";
 
-const post: Resource = {
+const post: Resource<typeof posts> = {
   name: "Post",
   name_plural: "Posts",
   model: "post",
@@ -25,7 +25,7 @@ const post: Resource = {
   rules: CreatePost,
   menuIcon: "",
   relations: ["author", "categories", "tags"],
-  filter: [
+  /*filter: [
     //{ name: "title", type: "text", label: "Title" },
     {
       type: "multi-select",
@@ -43,7 +43,7 @@ const post: Resource = {
       label: "Author",
       //renderOption: (row: User) => `${row.lastName} ${row.firstName}`,
     },
-  ],
+  ],*/
   form: [
     { name: "title", type: "text", label: "Title" },
     { name: "content", type: "richtext", label: "Content" },
@@ -62,7 +62,7 @@ const post: Resource = {
       resource: "users",
       renderLabel: (row) => `${row.lastName} ${row.firstName}`,
     },
-    {
+    /*{
       name: "categories",
       type: "manyToMany",
       label: "Categories",
@@ -75,28 +75,29 @@ const post: Resource = {
       label: "Tags",
       resource: "tags",
       renderLabel: (row) => row.title,
-    },
+    },*/
   ],
   list: [
     {
       name: "authorId",
       header: "Author",
-      render: ({ row }: TableData) => (
+      render: ({ row }) => (
         <div className="flex items-center gap-3">
           <Avatar>
             <AvatarImage
               referrerPolicy={"no-referrer"}
-              src={row.author.avatar}
+              src={''}
               className="w-10 h-10"
               width={10}
               height={10}
             />
             <AvatarFallback>
-              {row.author.firstName?.[0].toUpperCase()}
-              {row.author.lastName?.[0].toUpperCase()}
+              {row.title}
+              {/*row.author.firstName?.[0].toUpperCase()*/}
+              {/*row.author.lastName?.[0].toUpperCase()*/}
             </AvatarFallback>
           </Avatar>
-          {row.author.firstName} {row.author.lastName}
+          {/*row.author.firstName*/} {/*row.author.lastName*/}
         </div>
       ),
     },
@@ -107,8 +108,7 @@ const post: Resource = {
         label: "Title", 
         placeholder: "Search title...",
         //icon: Text,
-
-        variant: "text",
+        type: "text",
         name: "title",
       },
       render: ({ row }) => <span className="font-semibold">{row.title}</span>,
@@ -119,8 +119,9 @@ const post: Resource = {
       header: "Enable comments",
       render: ({ row, queryClient }) => (
         <Switch
-          checked={row.enableComments}
+          checked={false/*row.enableComments*/}
           onCheckedChange={async () => {
+            console.log(row);
             //await toggleEnableComments(row.id, !row.enableComments);
             queryClient.invalidateQueries({
               queryKey: ["getResourceData", "posts"],
@@ -133,17 +134,17 @@ const post: Resource = {
     {
       name: "categories",
       header: "Categories",
-      filter: {
+      /*filter: {
         label: "Category", 
         placeholder: "Search categories...",
         //icon: Text,
 
-        variant: "multiSelect",
+        type: "multiSelect",
         name: "categories",
         resource: "categories",
         //renderOption: (row: Category) => row.title,
         search: "categories_",
-      },
+      },*/
       /*render: ({ row }) => (
         <span className="flex gap-2">
           {row.categories?.map((category: Category) => (
@@ -154,56 +155,7 @@ const post: Resource = {
         </span>
       ),*/
     },
-    {
-      name: "actions",
-      header: "Actions",
-      render: ({ row, queryClient }) => {
-        //const [isPending, startTransition] = React.useTransition();
-
-        return (
-          <DropdownMenuSub key={"update-status"}>
-            <DropdownMenuSubTrigger>Status</DropdownMenuSubTrigger>
-            <DropdownMenuSubContent>
-              <DropdownMenuRadioGroup
-                value={row.status}
-                onValueChange={async (value) => {
-                  //startTransition(async () => {
-                    /*await toast.promise(
-                      updateStatus(row.id, value as PostStatus),
-                      {
-                        loading: "Updating...",
-                        success: async () => {
-                          await queryClient.invalidateQueries({
-                            queryKey: ["getResourceData", "posts"],
-                          });
-                          return "Status updated";
-                        },
-                        error: (err) => getErrorMessage(err),
-                      }
-                    );*/
-                  //});
-                }}
-              >
-                <DropdownMenuRadioItem
-                  key="draft"
-                  value="DRAFT"
-                  //disabled={isPending}
-                >
-                  DRAFT
-                </DropdownMenuRadioItem>
-                <DropdownMenuRadioItem
-                  key="published"
-                  value="PUBLISHED"
-                  //disabled={isPending}
-                >
-                  PUBLISHED
-                </DropdownMenuRadioItem>
-              </DropdownMenuRadioGroup>
-            </DropdownMenuSubContent>
-          </DropdownMenuSub>
-        );
-      },
-    },
+    
   ],
 };
 export { post };

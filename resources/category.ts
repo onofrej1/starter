@@ -1,7 +1,8 @@
+import { categories } from "@/db/schema";
 import { Resource } from "@/types/resources";
 import { CreateCategory } from "@/validation";
 
-const category: Resource = {
+const category: Resource<typeof categories> = {
   name: "Category",
   name_plural: "Categories",
   model: "category",
@@ -21,7 +22,7 @@ const category: Resource = {
         label: "Name",
         placeholder: "Search name...",
         //icon: Text,
-        variant: "text",
+        type: "text",
         name: "name",
       },
     },
@@ -32,11 +33,10 @@ const category: Resource = {
         label: "Description",
         placeholder: "Search description...",
         //icon: Text,
-        variant: "text",
+        type: "text",
         name: "description",
       },
     },
   ],
-  filter: [{ name: "title", type: "text", label: "Title" }],
 };
 export { category };

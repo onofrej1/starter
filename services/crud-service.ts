@@ -1,11 +1,12 @@
 import {
-  eq,
+  //eq,
   InferInsertModel,
   InferSelectModel,
   Table,
 } from "drizzle-orm";
 import { categoryService } from "./category-service";
 import { DrizzleResource } from "@/actions/resources";
+import { Filter } from "@/lib/resources";
 
 export type Pagination = {
   take: number;
@@ -23,7 +24,7 @@ export type Sort<T extends Table> = {
 };
 
 export interface ICrudService<T extends Table> {
-  getAll: (take: number, skip: number, sort: Sort<T>[], filters: any, joinOperator: string) => Promise<getAllData<T>>;
+  getAll: (take: number, skip: number, sort: Sort<T>[], filters: Filter[], joinOperator: string) => Promise<GetAllData<T>>;
   getOne: (id: string) => Promise<InferSelectModel<T> | undefined>;
   create: (data: InferInsertModel<T>) => Promise<InferInsertModel<T>[]>;
   update: (data: InferInsertModel<T>) => Promise<InferInsertModel<T>[]>;

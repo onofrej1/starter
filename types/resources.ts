@@ -5,13 +5,14 @@ import { JSX } from "react";
 //import { Option } from "@/components/multiple-selector";
 import { QueryClient } from "@tanstack/react-query";
 import { DrizzleResource } from "@/actions/resources";
+import { InferSelectModel, Table } from "drizzle-orm";
 
 interface BaseFormType {
   name: string;
   label?: string;
   placeholder?: string;
   className?: string;
-  onChange?: any;
+  onChange?: (e: string) => void;
 }
 
 export interface SelectOption {
@@ -22,21 +23,21 @@ export interface SelectOption {
 export interface MultiSelectOption {
   label: string;
   value: string;
-  icon?: any;
+  icon?: string;
 }
 
 export interface TableData {
-  [key: string]: any;
+  [key: string]: string | number | boolean;
 }
 
-export interface TableHeader {
+export interface TableHeader<T extends Table> {
   name: string;
   header: string;
-  filter?: any; //todo
+  filter?: FilterField, //Filter; //todo
   enableSort?: boolean;
   enableHide?: boolean;
   render?: (renderProps: {
-    row: TableData;
+    row: InferSelectModel<T>;
     queryClient: QueryClient;
   }) => JSX.Element;
 }
@@ -77,9 +78,9 @@ export interface SelectType extends BaseFormType {
 
 export interface ForeignKeyType extends BaseFormType {
   type: "foreignKey";
-  resource: DrizzleModel;
+  resource: string;
   relation: string;
-  renderLabel: (data: Record<string, any>) => string | JSX.Element;
+  renderLabel: (data: Record<string, string>) => string | JSX.Element;
   options?: SelectOption[] | MultiSelectOption[];
 }
 
@@ -90,12 +91,12 @@ export interface ForeignKeyType extends BaseFormType {
   renderLabel: (data: Record<string, any>) => string | JSX.Element;
 }*/
 
-export interface MultipleSelectorType extends BaseFormType {
+/*export interface MultipleSelectorType extends BaseFormType {
   type: "manyToMany";
   options?: Option[];
   resource: DrizzleModel;
   renderLabel: (data: Record<string, any>) => string | JSX.Element;
-}
+}*/
 
 export interface DatePickerType extends BaseFormType {
   type: "date-picker";
@@ -150,20 +151,43 @@ type FormField =
   | UploadType
   | RepeaterType
   | DateTimePickerType
-  | SwitchType
-  | MultipleSelectorType;
+  | SwitchType;
+  //| MultipleSelectorType;
+
+type Resource<T extends Table = Table> = {
+  name: string;
+  name_plural: string;
+  model: string;
+  menuIcon: string;
+
+  resource: DrizzleResource;
+  relations?: string[];
+  rules: Rules;
+
+  form: FormField[];
+  renderForm?: FormRender;
+  list: TableHeader<T>[];
+
+  advancedFilter?: boolean;
+  //floatingBar?: boolean;
+  // permissions
+  canAddItem?: boolean;
+  canEditItem?: boolean;
+  canRemoveItem?: boolean;
+};
 
 interface BaseFilterType {
   name: string;
   label: string;
+  placeholder: string;
 }
 
 interface TextFilterType extends BaseFilterType {
   type: "text";
 }
 
-interface NumberFilterType extends BaseFilterType {
-  type: "number";
+interface RangeFilterType extends BaseFilterType {
+  type: "range";
 }
 
 interface DateFilterType extends BaseFilterType {
@@ -177,16 +201,18 @@ interface BooleanFilterType extends BaseFilterType {
 export interface SelectFilterType extends BaseFilterType {
   type: "select";
   search: string;
+
   resource: string;
-  renderOption?: any;
+  renderOption?: (data: Record<string, string>) => string | JSX.Element;
   options?: { label: string; value: string }[];
 }
 
 export interface MultiSelectFilterType extends BaseFilterType {
-  type: "multi-select";
+  type: "multiSelect";
   search: string;
+
   resource: string;
-  renderOption?: any;
+  renderOption?: (data: Record<string, string>) => string | JSX.Element;
   options?: { label: string; value: string }[];
 }
 
@@ -196,28 +222,8 @@ export type FilterField =
   | MultiSelectFilterType
   | DateFilterType
   | TextFilterType
-  | NumberFilterType;
+  | RangeFilterType;
 
-type Resource = {
-  name: string;
-  name_plural: string;
-  model: DrizzleModel;
-  resource: DrizzleResource;
-  relations?: string[];
-  rules: Rules;
-  menuIcon: string;
-  form: FormField[];
-  renderForm?: FormRender;
-  list: TableHeader[];
-  filter: FilterField[];
-  advancedFilter?: boolean;
-  floatingBar?: boolean;
-  // permissions
-  canAddItem?: boolean;
-  canEditItem?: boolean;
-  canRemoveItem?: boolean;
-};
-
-type DrizzleModel = any; // TODO
+//type DrizzleModel = any; // TODO
 
 export type { Resource, FormField };

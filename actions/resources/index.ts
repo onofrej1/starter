@@ -1,12 +1,14 @@
 "use server";
 
-import { categories, tags } from "@/db/schema";
+import { categories, tags, posts } from "@/db/schema";
+import { Filter } from "@/lib/resources";
 import { getCrudService, Sort } from "@/services/crud-service";
 import { Table } from "drizzle-orm";
 
-const resources = {
+export const resources = {
   categories: categories,
   tags: tags,
+  posts: posts,
 };
 
 export type DrizzleResource = keyof typeof resources;
@@ -16,7 +18,7 @@ export async function getAll(
   take: number,
   skip: number,
   sort: Sort<Table>[],
-  filters: any,
+  filters: Filter[],
   relations: string[],
   joinOperator: string = "AND") {
   
@@ -33,7 +35,7 @@ type GetResourceProps = {
 };
 
 export async function getResource(props: GetResourceProps) {
-  const { id, resource, include = [] } = props;
+  const { id, resource, /*include = []*/ } = props;
   if (!id) {
     throw new Error('Wrong request');
   }
@@ -45,7 +47,7 @@ export async function getResource(props: GetResourceProps) {
 
 type UpdateResourceProps = {
   resource: DrizzleResource;
-  data: Record<string, any>;
+  data: Record<string, string | number | boolean>;
 };
 
 export async function createResource(props: UpdateResourceProps) {

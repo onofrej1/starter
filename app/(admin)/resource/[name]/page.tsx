@@ -6,7 +6,7 @@ import { Plus } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import React, { useState } from "react";
 import ResourceForm from "@/components/resources/form-dialog";
-//import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton";
+import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton";
 import { ResourceContext, useContext } from "@/resource-context";
 import { getAll } from "@/actions/resources";
 import { Filter } from "@/lib/resources";
@@ -17,7 +17,7 @@ export default function Resource() {
 
   const {
     resource: { list, relations = [], resource, advancedFilter = false },
-  } = useContext(ResourceContext);  
+  } = useContext(ResourceContext); 
 
   const {
     page,
@@ -29,16 +29,19 @@ export default function Resource() {
 
   const baseFilters: Filter[] = [];
   if (!advancedFilter) {
-    list.map(col => col.filter).filter(Boolean).forEach((field) => {
+    list.map(col => col.filter).filter(f => f !== undefined).forEach((field) => {
       const value = searchParams.get(field.name);
-      const isMultiSelect = field.variant === "multiSelect";
+      const isMultiSelect = field.type === "multiSelect";
+      //const isMultiSelect = false;
+
       if (value) {
         baseFilters.push({
           id: field.name,
-          variant: field.variant,
+          variant: field.type,
           operator: isMultiSelect ? "eq" : "ilike",
-          value: isMultiSelect ? value.split(',') : value,          
-          search: isMultiSelect ? field.search : field.name,          
+          value: isMultiSelect ? value.split(',') : value, 
+          search: field.name,         
+          //search: isMultiSelect ? field.search : field.name,          
         });
       }
     });
@@ -65,11 +68,11 @@ export default function Resource() {
     queryKey: [
       "getAll",
       resource,
-      JSON.stringify(filters_),
       skip,
       take,
+      joinOperator,
+      JSON.stringify(filters_),
       JSON.stringify(sort),
-      joinOperator
     ],
     queryFn: () => getAll(
       resource,
@@ -95,13 +98,11 @@ export default function Resource() {
         <React.Suspense
           fallback={
             <div>Loading...
-            {/*<DataTableSkeleton
+            {<DataTableSkeleton
               columnCount={6}
-              searchableColumnCount={1}
-              filterablecolumncount={2}
               cellWidths={["10rem", "40rem", "12rem", "12rem", "8rem", "8rem"]}
               shrinkZero
-            />*/}
+            />}
             </div>
           }
         >

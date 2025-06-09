@@ -42,6 +42,7 @@ export function getWhereQuery(filters: Filter[], entity: Table) {
     if (["text"].includes(filter.variant)) {
       if (value) {
         value = operator === 'ilike' ? '%'+value+'%' : value;
+        // @ts-expect-error eee
         where = oper[operator](entity[filter.id], value);
         query.push(where);
 
@@ -52,6 +53,7 @@ export function getWhereQuery(filters: Filter[], entity: Table) {
       console.log('multiselect');
       if (value) {
         value = operator === 'ilike' ? '%'+value+'%' : value;
+        // @ts-expect-error eee
         where = oper[operator](entity[filter.id], value);
         query.push(where);
 

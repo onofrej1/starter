@@ -22,3 +22,13 @@ export const categories = pgTable("categories", {
 export type Category = typeof categories.$inferSelect;
 export type NewCategory = typeof categories.$inferInsert;
 
+export const posts = pgTable("posts", {
+	id: serial('id').primaryKey(),
+	title: varchar({ length: 128 }),
+	content: varchar({ length: 128 }),
+	cover: varchar({ length: 128 }),
+});
+
+export type Post = typeof posts.$inferSelect;
+export type NewPost = typeof posts.$inferInsert;
+

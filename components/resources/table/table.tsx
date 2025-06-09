@@ -26,8 +26,6 @@ export function Table(props: TableProps) {
 
   const queryClient = useQueryClient();
 
-  //const [open, setOpen] = useState(false);
-
   const { data, numPages: pageCount } = use(props.dataPromise);
   const [initialized, setInitialized] = useState(false);
   const [tableColumns, setTableColumns] = useState<ColumnDef<TableData>[]>([]);
@@ -44,13 +42,6 @@ export function Table(props: TableProps) {
     fetchColumns();
   }, [queryClient, resource]);
 
-
-  /*useEffect(() => {
-    if (rowAction?.variant === 'update') {
-      setOpen(true);
-    }
-  }, [rowAction?.variant]);*/
-
   const { table } = useDataTable({
     data,
     columns: tableColumns,
@@ -64,9 +55,6 @@ export function Table(props: TableProps) {
     shallow: false,
     clearOnDefault: true,
   });
-  //const onOpenChange = useCallback(() => setRowAction(null), [rowAction?.variant]);
-
-  //const open = useMemo(() => rowAction?.variant === "update", [rowAction?.variant]);
   
   if (!initialized) return null;
 
@@ -87,11 +75,9 @@ export function Table(props: TableProps) {
         <ResourceFormDialog
           key="updateResource"
           open={rowAction?.variant === "update"}
-          //onOpenChange={onOpenChange}
           onOpenChange={() => setRowAction(null)}
           id={rowAction?.row.original.id}
         />
-      
     </div>
   );
 }

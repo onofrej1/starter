@@ -1,4 +1,4 @@
-'use client'
+"use client";
 import { resources } from "@/resources";
 import { Resource } from "@/types/resources";
 import { useParams } from "next/navigation";
@@ -8,20 +8,27 @@ import React, {
   useContext as useReactContext,
   useState,
 } from "react";
+import { categories, posts, tags } from "./db/schema";
 
-const ResourceContext = createContext<
-  | {
-      resource: Resource;
-      setResource: React.Dispatch<React.SetStateAction<Resource>>;
-    }
-  | undefined
->(undefined);
+type AnyResource = 
+| Resource <typeof categories> 
+| Resource <typeof tags> 
+| Resource<typeof posts>;
+
+interface IResourceContext {
+  resource: AnyResource;
+  setResource: React.Dispatch<React.SetStateAction<IResourceContext['resource']>>;
+}
+
+const ResourceContext = createContext<IResourceContext | undefined>(undefined);
 
 const ResourceProvider = ({ children }: React.PropsWithChildren) => {
   const { name } = useParams();
   const resourceConf = resources.find((r) => r.resource === name);
 
-  const [resource, setResource] = useState<Resource>(resourceConf!);
+  const [resource, setResource] = useState(
+    resourceConf!
+  );
 
   return (
     <ResourceContext value={{ resource, setResource }}>
@@ -30,7 +37,7 @@ const ResourceProvider = ({ children }: React.PropsWithChildren) => {
   );
 };
 
-const useContext = <T extends Record<string, unknown>>(
+const useContext = <T extends IResourceContext>(
   context: Context<T | undefined>
 ): T => {
   const value = useReactContext(context);
