@@ -19,7 +19,6 @@ import { Button } from "@/components/ui/button";
 import { Ellipsis } from "lucide-react";
 import { DataTableRowAction } from "@/types/data-table";
 import { QueryClient } from "@tanstack/react-query";
-//import { getOptions } from "@/api";
 
 interface GetColumnsProps {
   resource: string;
@@ -66,7 +65,8 @@ export async function getColumns({
 
   const actionColumn: ColumnDef<TableData> = {
     id: "actions",
-    cell: function Cell({ row }) {
+    cell: function Cell(props) {
+      const { row } = props;
       const customActions = resource.list.find(
         (field) => field.name === "actions"
       );
@@ -102,7 +102,7 @@ export async function getColumns({
           <DropdownMenuContent align="end" className="w-40">
             {resource.canEditItem === null ||
               (resource.canEditItem !== false && EditMenuItem)}
-            {customActions?.render!({ row: row.original, queryClient })}
+            {customActions?.render!(props, queryClient )}
 
             {resource.canRemoveItem === null ||
               (resource.canRemoveItem !== false && (
@@ -134,10 +134,10 @@ export async function getColumns({
 
       if (field.filter) {
         const filter = field.filter;
-        if (filter.variant === "multiSelect") {
+        if (filter.type === "multiSelect") {
           /*const optionsData = await queryClient.fetchQuery({
             queryKey: ["getOptions", filter.resource],
-            queryFn: () => getOptions(filter.resource!),
+            queryFn: () => getResource() /*getOptions(filter.resource!),
           });
           const options = optionsData.map((o: any) => ({
             label: filter.renderOption(o),
@@ -147,10 +147,9 @@ export async function getColumns({
         }
         column.meta = field.filter;
       }
-
       if (field.render) {
-        column.cell = ({ row }) => {
-          return field.render!({ row: row.original, queryClient });
+        column.cell = (props) => {
+          return field.render!(props, queryClient);
         };
       }
       return column;

@@ -1,8 +1,8 @@
-import { categories } from "@/db/schema";
+import { Category } from "@/db/schema";
 import { Resource } from "@/types/resources";
 import { CreateCategory } from "@/validation";
 
-const category: Resource<typeof categories> = {
+const category: Resource = {
   name: "Category",
   name_plural: "Categories",
   model: "category",
@@ -24,6 +24,13 @@ const category: Resource<typeof categories> = {
         //icon: Text,
         type: "text",
         name: "name",
+      },
+      render: ({ row }) => {
+        return (
+          <div className="flex items-center gap-3">
+            {(row.original as Category).name}
+          </div>
+        )
       },
     },
     {

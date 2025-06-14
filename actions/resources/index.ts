@@ -1,19 +1,10 @@
 "use server";
 
-import { categories, tags, posts } from "@/db/schema";
-import { Filter } from "@/lib/resources";
-import { getCrudService, Sort } from "@/services/crud-service";
+import { DrizzleResource, Filter } from "@/lib/resources";
+import { getDataService, ResourceData, Sort } from "@/services/resource";
 import { Table } from "drizzle-orm";
 
-export const resources = {
-  categories: categories,
-  tags: tags,
-  posts: posts,
-};
-
-export type DrizzleResource = keyof typeof resources;
-
-export async function getAll(
+export async function search(
   resource: DrizzleResource,
   take: number,
   skip: number,
@@ -21,47 +12,18 @@ export async function getAll(
   filters: Filter[],
   relations: string[],
   joinOperator: string = "AND") {
-  
-  const crudService = getCrudService(resource);
-  const { data, numPages } = await crudService.getAll(take, skip, sort, filters, joinOperator);
 
-  return { data, numPages };
+  return getDataService(resource).getAll(take, skip, sort, filters, joinOperator);  
 }
 
-type GetResourceProps = {
-  resource: DrizzleResource;
-  id?: string;
-  include: string[]
-};
-
-export async function getResource(props: GetResourceProps) {
-  const { id, resource, /*include = []*/ } = props;
-  if (!id) {
-    throw new Error('Wrong request');
-  }
-  const crudService = getCrudService(resource);
-  const data = await crudService.getOne(id);
-
-  return { status: "success", data };
+export async function get(resource: DrizzleResource, id: number) {
+  return getDataService(resource).get(id);
 }
 
-type UpdateResourceProps = {
-  resource: DrizzleResource;
-  data: Record<string, string | number | boolean>;
-};
-
-export async function createResource(props: UpdateResourceProps) {
-  const { data, resource } = props;
-  const crudService = getCrudService(resource);  
-  const newData = await crudService.create(data);
-
-  return { status: "success", data: newData };
+export async function create(resource: DrizzleResource, data: ResourceData) {
+  return getDataService(resource).create(data);
 }
 
-export async function updateResource(props: UpdateResourceProps) {
-  const { data, resource } = props;
-  const crudService = getCrudService(resource);
-  const updatedData = await crudService.update(data);
-
-  return { status: "success", data: updatedData };  
+export async function update(resource: DrizzleResource, data: ResourceData) {
+  return await getDataService(resource).update(data);
 }

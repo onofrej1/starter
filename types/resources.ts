@@ -3,9 +3,11 @@ import { RepeaterRenderFunc } from "@/components/form/repeater";
 import { Rules } from "@/validation";
 import { JSX } from "react";
 //import { Option } from "@/components/multiple-selector";
+import { InferSelectModel } from "drizzle-orm";
+import { CellContext } from "@tanstack/react-table";
+import { categories, posts, tags } from "@/db/schema";
 import { QueryClient } from "@tanstack/react-query";
-import { DrizzleResource } from "@/actions/resources";
-import { InferSelectModel, Table } from "drizzle-orm";
+import { DrizzleResource } from "@/lib/resources";
 
 interface BaseFormType {
   name: string;
@@ -26,20 +28,18 @@ export interface MultiSelectOption {
   icon?: string;
 }
 
-export interface TableData {
-  [key: string]: string | number | boolean;
-}
+export type TableData = 
+| InferSelectModel<typeof categories>
+| InferSelectModel<typeof posts>
+| InferSelectModel<typeof tags>;
 
-export interface TableHeader<T extends Table> {
+export interface TableHeader {
   name: string;
   header: string;
   filter?: FilterField, //Filter; //todo
   enableSort?: boolean;
   enableHide?: boolean;
-  render?: (renderProps: {
-    row: InferSelectModel<T>;
-    queryClient: QueryClient;
-  }) => JSX.Element;
+  render?: (props: CellContext<TableData, unknown>, queryClient: QueryClient) => JSX.Element,
 }
 
 export interface InputType extends BaseFormType {
@@ -154,7 +154,7 @@ type FormField =
   | SwitchType;
   //| MultipleSelectorType;
 
-type Resource<T extends Table = Table> = {
+type Resource = {
   name: string;
   name_plural: string;
   model: string;
@@ -166,7 +166,7 @@ type Resource<T extends Table = Table> = {
 
   form: FormField[];
   renderForm?: FormRender;
-  list: TableHeader<T>[];
+  list: TableHeader[];
 
   advancedFilter?: boolean;
   //floatingBar?: boolean;

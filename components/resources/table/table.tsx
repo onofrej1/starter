@@ -48,7 +48,7 @@ export function Table(props: TableProps) {
     pageCount,
     enableAdvancedFilter: advancedFilter,
     initialState: {
-      sorting: [{ id: "createdAt", desc: true }],
+      sorting: [{ id: "id", desc: true }],
       columnPinning: { right: ["actions"] },
     },
     getRowId: (originalRow) => originalRow.id.toString(),

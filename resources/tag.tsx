@@ -1,8 +1,8 @@
-import { tags } from "@/db/schema";
+import { Tag } from "@/db/schema";
 import { Resource } from "@/types/resources";
 import { CreateTag } from "@/validation";
 
-const tag: Resource<typeof tags> = {
+const tag: Resource = {
   name: "Tag",
   name_plural: "Tags",
   model: "tag",
@@ -11,7 +11,17 @@ const tag: Resource<typeof tags> = {
   rules: CreateTag,
   form: [{ name: "title", type: "text", label: "Title" }],
   list: [
-    { name: "id", header: "Id" },
+    { 
+      name: "id", 
+      header: "Id",
+      render: ({ row, cell }) => {
+        return (
+          <div className="flex items-center gap-3">
+            {cell.getValue<string>()} { (row.original as Tag).slug }
+          </div>
+        )
+      },
+     },
     { name: "title", header: "Title" },
   ],
 };

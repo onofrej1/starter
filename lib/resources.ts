@@ -1,6 +1,22 @@
 //import { FormField, TableData } from "@/types/resources";
+import { categories, posts, tags } from "@/db/schema";
 import { FilterVariant } from "@/types/data-table";
 import { eq, ilike, ne, Table } from "drizzle-orm";
+
+export const resources = {
+  categories: categories,
+  tags: tags,
+  posts: posts,
+};
+
+export enum Resources {
+  Categories = 'categories',
+  Tags = 'tags',
+  Posts = 'posts'
+}
+
+export type DrizzleResource = keyof typeof resources;
+
 
 export function getOrderBy(input: string) {
   if (!input) {
@@ -19,13 +35,8 @@ export type Filter = {
   search: string;
 }
 
-export function getWhereQuery(filters: Filter[], entity: Table) {
-  if (!filters) {
-    return [];
-  }
-  
-  //const filters: Filter[] /*Filter<TableData>[]*/ = JSON.parse(input);
-  //
+export function searchResource(resource: Table, filters: Filter[]) {
+  //const filters: Filter[] /*Filter<TableData>[]*/ = JSON.parse(input);  
   const query: any[] = []; // eslint-disable-line
 
   const oper: Record<string, typeof eq | typeof ne | typeof ilike> = {
@@ -43,7 +54,7 @@ export function getWhereQuery(filters: Filter[], entity: Table) {
       if (value) {
         value = operator === 'ilike' ? '%'+value+'%' : value;
         // @ts-expect-error eee
-        where = oper[operator](entity[filter.id], value);
+        where = oper[operator](resource[filter.id], value);
         query.push(where);
 
       }
@@ -54,9 +65,8 @@ export function getWhereQuery(filters: Filter[], entity: Table) {
       if (value) {
         value = operator === 'ilike' ? '%'+value+'%' : value;
         // @ts-expect-error eee
-        where = oper[operator](entity[filter.id], value);
+        where = oper[operator](resource[filter.id], value);
         query.push(where);
-
       }
     }
   });

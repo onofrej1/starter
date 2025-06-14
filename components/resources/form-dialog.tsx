@@ -13,11 +13,11 @@ import {
 import { ResourceContext, useContext } from "@/resource-context";
 import { useSubmitForm } from "@/hooks/resources/use-submit-form";
 //import { useRichtextFields } from "@/hooks/resources/use-richtext-fields";
-import { createResource, getResource, updateResource } from "@/actions/resources";
+import { create, get, update } from "@/actions/resources";
 import { FormField } from "@/types/resources";
 
 interface ResourceFormDialogProps {
-  id?: string;
+  id?: number;
   open: boolean;
   onOpenChange?(open: boolean): void;
 }
@@ -31,8 +31,6 @@ export default function ResourceFormDialog(props: ResourceFormDialogProps) {
     console.log('set is open', isOpen);
     setOpen(isOpen);
   }, [isOpen]);
-
-  console.log('form dialog');
   
   const { resource: { form, /*relations,*/ resource, rules, renderForm } } = useContext(ResourceContext);
 
@@ -40,14 +38,13 @@ export default function ResourceFormDialog(props: ResourceFormDialogProps) {
     //initialData: {},
     gcTime: 0,
     queryKey: ["getResource", resource, id],
-    queryFn: () =>
-      getResource({ id, resource, include: [] }),
+    queryFn: () => get(resource, id!),
     enabled: !!id,
   });
 
   //const { fields, data: updatedData } = useRelationFields(form, data);
   //const { data: formData } = useRichtextFields(form, data /*updatedData*/);
-  const { submitForm, status } = useSubmitForm(resource, form /*fields*/, !!id ? updateResource : createResource);
+  const { submitForm, status } = useSubmitForm(resource, form /*fields*/, !!id ? update : create);
   console.log(submitForm);
   
   useEffect(() => {

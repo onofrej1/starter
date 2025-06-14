@@ -8,15 +8,9 @@ import React, {
   useContext as useReactContext,
   useState,
 } from "react";
-import { categories, posts, tags } from "./db/schema";
-
-type AnyResource = 
-| Resource <typeof categories> 
-| Resource <typeof tags> 
-| Resource<typeof posts>;
 
 interface IResourceContext {
-  resource: AnyResource;
+  resource: Resource;
   setResource: React.Dispatch<React.SetStateAction<IResourceContext['resource']>>;
 }
 

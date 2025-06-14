@@ -30,7 +30,7 @@ import { useMediaQuery } from "@/hooks/use-media-query";
 import { TableData } from "@/types/resources";
 import { useMutation } from "@tanstack/react-query";
 //import { deleteResources } from "@/api";
-const deleteResources = ({ resource, rows} : { resource: string, rows: TableData[]}) => new Promise(r => r({ resource, rows }));
+const deleteResources = ({ resource, rows} : { resource: string, rows: number[]}) => new Promise(r => r({ resource, rows }));
 
 interface DeleteDialogProps
   extends React.ComponentPropsWithoutRef<typeof Dialog> {

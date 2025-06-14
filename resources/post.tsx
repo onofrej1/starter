@@ -2,7 +2,8 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 //import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
-import { posts } from "@/db/schema";
+import { Post } from "@/db/schema";
+//import { posts } from "@/db/schema";
 import { Resource } from "@/types/resources";
 import { CreatePost } from "@/validation";
 /*import {
@@ -16,7 +17,7 @@ import { CreatePost } from "@/validation";
 //import { getErrorMessage } from "@/lib/utils";
 import React from "react";
 
-const post: Resource<typeof posts> = {
+const post: Resource = {
   name: "Post",
   name_plural: "Posts",
   model: "post",
@@ -92,7 +93,7 @@ const post: Resource<typeof posts> = {
               height={10}
             />
             <AvatarFallback>
-              {row.title}
+              {(row.original as Post).title}
               {/*row.author.firstName?.[0].toUpperCase()*/}
               {/*row.author.lastName?.[0].toUpperCase()*/}
             </AvatarFallback>
@@ -111,13 +112,13 @@ const post: Resource<typeof posts> = {
         type: "text",
         name: "title",
       },
-      render: ({ row }) => <span className="font-semibold">{row.title}</span>,
+      render: ({ row }) => <span className="font-semibold">{(row.original as Post).title}</span>,
     },
     { name: "cover", header: "Cover" },
     {
       name: "enableComments",
       header: "Enable comments",
-      render: ({ row, queryClient }) => (
+      render: ({ row }, queryClient ) => (
         <Switch
           checked={false/*row.enableComments*/}
           onCheckedChange={async () => {

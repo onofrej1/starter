@@ -8,6 +8,7 @@ export const tags = pgTable("tags", {
 	slug: varchar({ length: 128 }),
 });
 
+export type TagTable = typeof tags;
 export type Tag = typeof tags.$inferSelect;
 export type NewTag = typeof tags.$inferInsert;
 
@@ -19,6 +20,7 @@ export const categories = pgTable("categories", {
   newProps: varchar({ length: 128 }),
 });
 
+export type CategoryTable = typeof categories;
 export type Category = typeof categories.$inferSelect;
 export type NewCategory = typeof categories.$inferInsert;
 
@@ -29,6 +31,7 @@ export const posts = pgTable("posts", {
 	cover: varchar({ length: 128 }),
 });
 
+export type PostTable = typeof posts;
 export type Post = typeof posts.$inferSelect;
 export type NewPost = typeof posts.$inferInsert;
 
