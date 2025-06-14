@@ -1,19 +1,15 @@
 "use server";
 
-import { DrizzleResource, Filter } from "@/lib/resources";
-import { getDataService, ResourceData, Sort } from "@/services/resource";
-import { Table } from "drizzle-orm";
+import { DrizzleResource } from "@/lib/resources";
+import { getDataService, OrderBy, Pagination, ResourceData, Search } from "@/services/resource";
 
-export async function search(
+export async function getAll(
   resource: DrizzleResource,
-  take: number,
-  skip: number,
-  sort: Sort<Table>[],
-  filters: Filter[],
-  relations: string[],
-  joinOperator: string = "AND") {
-
-  return getDataService(resource).getAll(take, skip, sort, filters, joinOperator);  
+  pagination: Pagination,
+  search: Search,
+  orderBy: OrderBy[]
+) {
+  return getDataService(resource).getAll(pagination, search, orderBy);
 }
 
 export async function get(resource: DrizzleResource, id: number) {

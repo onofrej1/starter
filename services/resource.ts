@@ -13,13 +13,10 @@ export type Pagination = {
   skip: number;
 }
 
-export type GetAllData<T extends Table> = {
-  data: InferSelectModel<T>[];
-  pageCount: number;
-}
+export type GetAllReturnType<T extends Table> = [ InferSelectModel<T>[], number ]
 
-export type OrderBy<T extends Table> = {
-  id: keyof InferInsertModel<T>;
+export type OrderBy = {
+  id: string;
   desc: boolean;
 };
 
@@ -30,8 +27,8 @@ export type Search = {
 
 export type ResourceData = Record<string, string | number | boolean>;
 
-export interface ResourceService<T extends Table> {
-  getAll: (pagination: Pagination, search: Search, orderBy: OrderBy<T>[]) => Promise<GetAllData<T>>;
+export interface DataService<T extends Table> {
+  getAll: (pagination: Pagination, search: Search, orderBy: OrderBy[]) => Promise<GetAllReturnType<T>>;
   get: (id: number) => Promise<InferSelectModel<T> | undefined>;
   create: (data: InferInsertModel<T>) => Promise<InferInsertModel<T>[]>;
   update: (data: InferInsertModel<T>) => Promise<InferInsertModel<T>[]>;

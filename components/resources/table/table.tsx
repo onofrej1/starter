@@ -16,7 +16,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { DataTableToolbar } from "@/components/data-table/data-table-toolbar";
 
 interface TableProps {
-  dataPromise: Promise<{ data: TableData[]; numPages: number }>;
+  dataPromise: Promise<[ data: TableData[], pageCount: number ]>;
 }
 
 export function Table(props: TableProps) {
@@ -26,7 +26,7 @@ export function Table(props: TableProps) {
 
   const queryClient = useQueryClient();
 
-  const { data, numPages: pageCount } = use(props.dataPromise);
+  const [ data, pageCount ] = use(props.dataPromise);
   const [initialized, setInitialized] = useState(false);
   const [tableColumns, setTableColumns] = useState<ColumnDef<TableData>[]>([]);
 

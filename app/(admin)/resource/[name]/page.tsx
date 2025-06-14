@@ -10,6 +10,7 @@ import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton";
 import { ResourceContext, useContext } from "@/resource-context";
 import { getAll } from "@/actions/resources";
 import { Filter } from "@/lib/resources";
+import { OrderBy } from "@/services/resource";
 
 export default function Resource() {
   const searchParams = useSearchParams();
@@ -17,13 +18,15 @@ export default function Resource() {
 
   const {
     resource: { list, relations = [], resource, advancedFilter = false },
-  } = useContext(ResourceContext); 
+  } = useContext(ResourceContext);
+
+  console.log(relations);
 
   const {
     page,
     perPage,
     sort = "",
-    joinOperator = 'AND',
+    joinOperator: operator = 'AND',
     filters,
   } = Object.fromEntries(searchParams.entries());
 
@@ -55,35 +58,45 @@ export default function Resource() {
     filtersParsed = JSON.parse(filters);
   } catch {}
 
-  let sortParsed: { id: string, desc: boolean }[] = [];
+  let orderBy: OrderBy[] = [];
   try {
-    sortParsed = JSON.parse(sort);
+    orderBy = JSON.parse(sort);
   } catch {}
 
+  const pagination = {
+    take,
+    skip: skip * take,
+  };
+
   const filters_ = advancedFilter ? filtersParsed : baseFilters;
+  const search = {
+    filters: filters_,
+    operator
+  };
 
   const { promise } = useQuery({
     experimental_prefetchInRender: true,
-    initialData: { data: [], numPages: 0 },
+    initialData: [[], 0 ],
     queryKey: [
       "getAll",
       resource,
       skip,
       take,
-      joinOperator,
+      operator,
       JSON.stringify(filters_),
       JSON.stringify(sort),
-    ],
+    ],    
+
     queryFn: () => getAll(
       resource,
-      take,
-      skip * take,
-      sortParsed,
-      filters_,
-      relations,
-      joinOperator,
+      pagination,      
+      search, 
+      orderBy,
+      //relations,      
      ),
   });
+
+  console.log(promise);
   
   return (
     <div className="w-full">

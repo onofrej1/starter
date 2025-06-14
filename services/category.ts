@@ -4,18 +4,18 @@ import {
   count,
   eq,
   desc,
-  asc,
+  asc,  
 } from "drizzle-orm";
 import { db } from "@/db";
-import { categories, CategoryTable, NewCategory } from "@/db/schema";
+import { categories, Category, CategoryTable, NewCategory } from "@/db/schema";
 import { searchResource } from "@/lib/resources";
-import { Pagination, ResourceService, OrderBy, Search } from "./resource";
+import { Pagination, DataService, OrderBy, Search } from "./resource";
 
-export const categoryService: ResourceService<CategoryTable> = {
+export const categoryService: DataService<CategoryTable> = {
   getAll: async (
     pagination: Pagination,    
     search: Search,
-    orderBy: OrderBy<CategoryTable>[],
+    orderBy: OrderBy[],
   ) => {
     const { take, skip } = pagination;
     const { filters, operator } = search;
@@ -29,9 +29,10 @@ export const categoryService: ResourceService<CategoryTable> = {
 
     const pageCount = Math.ceil(rowCount[0].count / Number(take));
 
-    const orderByQuery = orderBy.map((item) =>
-      item.desc ? desc(categories[item.id]) : asc(categories[item.id])
-    );
+    const orderByQuery = orderBy.map((item) => {
+      const key = item.id as keyof Category;
+      return item.desc ? desc(categories[key]) : asc(categories[key])
+    });
 
     const data = await db
       .select()
@@ -41,7 +42,7 @@ export const categoryService: ResourceService<CategoryTable> = {
       .offset(skip)
       .orderBy(...orderByQuery);
 
-    return { data, pageCount };
+    return [ data, pageCount ];
   },
 
   get: (id: number) =>
