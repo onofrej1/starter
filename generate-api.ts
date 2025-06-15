@@ -1,30 +1,39 @@
-import { resources } from "@/resources";
 import { replaceInFileSync } from "replace-in-file";
-import fs from 'fs-extra';
-import path from 'path';
+import fs from "fs-extra";
+import path from "path";
 
-const generateApi = (resource: string, model: string) => {
+const generateApi = (name: string, table: string) => {
   const templatePath = path.join(__dirname, "generator", "templates");
-  const destinationPath = path.join(
-    process.cwd(),
-    "app",
-    "api",
-    "resources",
-    resource
-  );
+  const destinationPath = path.join(process.cwd(), "services");
 
-  console.log(`Generating api for "${model}" model:`);
+  console.log(`Generating api for "${name}" resource:`);
   fs.copySync(templatePath, destinationPath);
+
+  fs.rename(
+    path.join(destinationPath, "service.ts.tpl"),
+    path.join(destinationPath, name + ".ts")
+  );
 
   replaceInFileSync({
     files: path.join(destinationPath, "**", "*"),
-    from: /\[MODEL\]/g,
-    to: model,
+    from: /\[TABLE\]/g,
+    to: table,
+  });
+
+  replaceInFileSync({
+    files: path.join(destinationPath, "**", "*"),
+    from: /\[NAME\]/g,
+    to: name,
   });
 };
 
-const defaultModels = [{ model: "user", resource: "users", relations: [] }];
+//const defaultModels = [{ model: "user", resource: "users", relations: [] }];
 
-for (const model of [...resources, ...defaultModels]) {
-  generateApi(model.resource, model.model);
+const models = [
+  { name: 'category', table: 'categories' },
+  { name: "tag", table: "tags" },
+  { name: "post", table: "posts" },
+];
+for (const model of [...models /*, ...defaultModels*/]) {
+  generateApi(model.name, model.table);
 }

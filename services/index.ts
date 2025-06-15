@@ -1,19 +1,15 @@
-import {
-  //eq,
-  InferInsertModel,
-  InferSelectModel,
-  Table,
-} from "drizzle-orm";
+import { InferInsertModel, InferSelectModel, Table } from "drizzle-orm";
 import { categoryService } from "@/services/category";
 import { DrizzleResource, Filter, Resources } from "@/lib/resources";
-//import { tagService } from "@/services/tag";
+import { postService } from "./post";
+import { tagService } from "./tag";
 
 export type Pagination = {
   take: number;
   skip: number;
-}
+};
 
-export type GetAllReturnType<T extends Table> = [ InferSelectModel<T>[], number ]
+export type GetAllReturnType<T extends Table> = [InferSelectModel<T>[], number];
 
 export type OrderBy = {
   id: string;
@@ -21,14 +17,18 @@ export type OrderBy = {
 };
 
 export type Search<T = Table> = {
-  filters: Filter<T>[],
-  operator: 'and' | 'or'
-}
+  filters: Filter<T>[];
+  operator: "and" | "or";
+};
 
 export type ResourceData = Record<string, string | number | boolean>;
 
 export interface DataService<T extends Table> {
-  getAll: (pagination: Pagination, search: Search<T>, orderBy: OrderBy[]) => Promise<GetAllReturnType<T>>;
+  getAll: (
+    pagination: Pagination,
+    search: Search<T>,
+    orderBy: OrderBy[]
+  ) => Promise<GetAllReturnType<T>>;
   get: (id: number) => Promise<InferSelectModel<T> | undefined>;
   create: (data: InferInsertModel<T>) => Promise<InferInsertModel<T>[]>;
   update: (data: InferInsertModel<T>) => Promise<InferInsertModel<T>[]>;
@@ -36,16 +36,9 @@ export interface DataService<T extends Table> {
 }
 
 export function getDataService(resourceName: DrizzleResource) {
-  switch (resourceName) {
-    case Resources.Categories: {
-      return categoryService;
-    }
-    case Resources.Tags: {
-      return categoryService;
-      //return tagService;
-    }
-    default: {
-      throw new Error("Service not found");
-    }
-  }
+  return {
+    [Resources.Categories]: categoryService,
+    [Resources.Tags]: tagService,
+    [Resources.Posts]: postService,
+  }[resourceName];
 }

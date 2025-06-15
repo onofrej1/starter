@@ -5,40 +5,40 @@ import {
   asc,  
 } from "drizzle-orm";
 import { db } from "@/db";
-import { categories } from "@/db/schema";
+import { posts } from "@/db/schema";
 import { Pagination, DataService, OrderBy, Search } from "@/services";
 import { filterData } from "@/lib/filter-data";
 
-export const categoryService: DataService<typeof categories> = {
+export const postService: DataService<typeof posts> = {
   getAll: async (
     pagination: Pagination,    
-    search: Search<typeof categories>,
+    search: Search<typeof posts>,
     orderBy: OrderBy[],
   ) => {
     const { take, skip } = pagination;
     const { filters, operator } = search;
 
     const where = filterData({
-      table: categories,
+      table: posts,
       filters: filters,
       joinOperator: operator,
     });
 
     const rowCount = await db
       .select({ count: count() })
-      .from(categories)
+      .from(posts)
       .where(where)
 
     const pageCount = Math.ceil(rowCount[0].count / Number(take));
 
     const orderByQuery = orderBy.map((item) => {
-      const key = item.id as keyof typeof categories.$inferInsert;
-      return item.desc ? desc(categories[key]) : asc(categories[key])
+      const key = item.id as keyof typeof posts.$inferInsert;
+      return item.desc ? desc(posts[key]) : asc(posts[key])
     });
 
     const data = await db
       .select()
-      .from(categories)
+      .from(posts)
       .where(where)
       .limit(take)
       .offset(skip)
@@ -48,15 +48,15 @@ export const categoryService: DataService<typeof categories> = {
   },
 
   get: (id: number) =>
-    db.query.categories.findFirst({ where: eq(categories.id, Number(id)) }),
+    db.query.posts.findFirst({ where: eq(posts.id, Number(id)) }),
 
-  create: (data: typeof categories.$inferInsert) =>
-    db.insert(categories).values(data).returning(),
+  create: (data: typeof posts.$inferInsert) =>
+    db.insert(posts).values(data).returning(),
 
-  update: (data: typeof categories.$inferInsert) =>
+  update: (data: typeof posts.$inferInsert) =>
     db
-      .update(categories)
+      .update(posts)
       .set(data)
-      .where(eq(categories.id, Number(data.id)))
+      .where(eq(posts.id, Number(data.id)))
       .returning(),
 };

@@ -9,7 +9,7 @@ import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton";
 import { ResourceContext, useContext } from "@/resource-context";
 import { getAll } from "@/actions/resources";
 import { Filter } from "@/lib/resources";
-import { OrderBy, Search } from "@/services/resource";
+import { OrderBy, Search } from "@/services";
 import { parseJson } from "@/lib/utils";
 import { Table as DrizzleTable } from "drizzle-orm";
 import { Table } from "@/components/resources/table/table";
@@ -32,8 +32,6 @@ export default function Resource() {
     joinOperator: operator = 'and',
     filters,
   } = Object.fromEntries(searchParams.entries());
-
-  //const filters = getValidFilters(rawFilters);
 
   const baseFilters: Filter[] = [];
   if (!advancedFilter) {

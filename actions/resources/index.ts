@@ -1,7 +1,7 @@
 "use server";
 
 import { DrizzleResource } from "@/lib/resources";
-import { getDataService, OrderBy, Pagination, ResourceData, Search } from "@/services/resource";
+import { getDataService, OrderBy, Pagination, ResourceData, Search } from "@/services";
 
 export async function getAll(
   resource: DrizzleResource,

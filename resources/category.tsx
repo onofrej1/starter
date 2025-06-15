@@ -9,6 +9,7 @@ const category: Resource = {
   resource: "categories",
   menuIcon: "",
   rules: CreateCategory,
+  //advancedFilter: true,
   form: [
     { name: "name", type: "text", label: "Name" },
     { name: "description", type: "text", label: "Description" }
