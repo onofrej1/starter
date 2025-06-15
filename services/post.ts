@@ -51,12 +51,11 @@ export const postService: DataService<typeof posts> = {
     db.query.posts.findFirst({ where: eq(posts.id, Number(id)) }),
 
   create: (data: typeof posts.$inferInsert) =>
-    db.insert(posts).values(data).returning(),
+    db.insert(posts).values(data),
 
   update: (data: typeof posts.$inferInsert) =>
     db
       .update(posts)
       .set(data)
-      .where(eq(posts.id, Number(data.id)))
-      .returning(),
+      .where(eq(posts.id, Number(data.id))),
 };

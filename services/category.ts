@@ -51,12 +51,11 @@ export const categoryService: DataService<typeof categories> = {
     db.query.categories.findFirst({ where: eq(categories.id, Number(id)) }),
 
   create: (data: typeof categories.$inferInsert) =>
-    db.insert(categories).values(data).returning(),
+    db.insert(categories).values(data),
 
   update: (data: typeof categories.$inferInsert) =>
     db
       .update(categories)
       .set(data)
-      .where(eq(categories.id, Number(data.id)))
-      .returning(),
+      .where(eq(categories.id, Number(data.id))),
 };

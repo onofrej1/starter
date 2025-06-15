@@ -1,4 +1,4 @@
-import { seedCategories, seedPosts, seedTags } from "./seeds";
+import { seedCategories, seedPosts, seedPostTags, seedTags } from "./seeds";
 
 async function runSeed() {
   console.log("⏳ Running seed...");
@@ -8,6 +8,7 @@ async function runSeed() {
   await seedCategories({ count: 100 });
   await seedTags({ count: 100 });
   await seedPosts({ count: 100 });
+  await seedPostTags();
 
   const end = Date.now();
 

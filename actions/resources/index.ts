@@ -21,5 +21,5 @@ export async function create(resource: DrizzleResource, data: ResourceData) {
 }
 
 export async function update(resource: DrizzleResource, data: ResourceData) {
-  return await getDataService(resource).update(data);
+  return getDataService(resource).update(data);
 }

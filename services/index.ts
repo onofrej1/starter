@@ -3,6 +3,7 @@ import { categoryService } from "@/services/category";
 import { DrizzleResource, Filter, Resources } from "@/lib/resources";
 import { postService } from "./post";
 import { tagService } from "./tag";
+import { QueryResult } from "pg";
 
 export type Pagination = {
   take: number;
@@ -21,7 +22,15 @@ export type Search<T = Table> = {
   operator: "and" | "or";
 };
 
-export type ResourceData = Record<string, string | number | boolean>;
+/*export type ResourceData = { 
+  [key: string]: { 
+    file: File,
+    previousFile: File,
+    isDirty: boolean,
+  }
+} & Record<string, number | string | boolean | null>;*/
+
+export type ResourceData = Record<string, unknown>;
 
 export interface DataService<T extends Table> {
   getAll: (
@@ -30,8 +39,8 @@ export interface DataService<T extends Table> {
     orderBy: OrderBy[]
   ) => Promise<GetAllReturnType<T>>;
   get: (id: number) => Promise<InferSelectModel<T> | undefined>;
-  create: (data: InferInsertModel<T>) => Promise<InferInsertModel<T>[]>;
-  update: (data: InferInsertModel<T>) => Promise<InferInsertModel<T>[]>;
+  create: (data: InferInsertModel<T>) => Promise<QueryResult>;
+  update: (data: InferInsertModel<T>) => Promise<QueryResult>;
   //delete: (id: string) => Promise<T>;*/
 }
 

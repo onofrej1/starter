@@ -1,6 +1,14 @@
 import { db } from "@/db/index";
-import { type Category, Post, Tag, categories, posts } from "@/db/schema";
-import { random } from "@/lib/utils";
+import {
+  type Category,
+  Post,
+  Tag,
+  categories,
+  posts,
+  postsToTags,
+  tags,
+} from "@/db/schema";
+import { random, randomValues } from "@/lib/utils";
 import { faker } from "@faker-js/faker";
 
 export async function seedCategories(input: { count: number }) {
@@ -32,8 +40,8 @@ export async function seedTags(input: { count: number }) {
   try {
     const data = faker.helpers.multiple(createTag, { count });
 
-    await db.delete(categories);
-    await db.insert(categories).values(data).onConflictDoNothing();
+    await db.delete(tags);
+    await db.insert(tags).values(data).onConflictDoNothing();
   } catch (err) {
     console.error(err);
   }
@@ -79,4 +87,42 @@ function createPost(categories: number[]): Omit<Post, "id"> {
     cover: faker.lorem.word(),
     categoryId: random(categories) as number,
   };
+}
+
+export async function seedPostTags() {
+  const posts = await db.query.posts.findMany({
+    columns: {
+      id: true,
+    },
+  });
+  const postIds = posts.map((post) => post.id);
+
+  const tags = await db.query.tags.findMany({
+    columns: {
+      id: true,
+    },
+  });
+  const tagIds = tags.map((tag) => tag.id);
+
+  try {
+    for (const postId of postIds) {
+      const randomTags = randomValues(tagIds, 3, true) as number[];
+      await db.insert(postsToTags).values([
+        {
+          postId,
+          tagId: randomTags[0],
+        },
+        {
+          postId,
+          tagId: randomTags[1],
+        },
+        {
+          postId,
+          tagId: randomTags[2],
+        },
+      ]);
+    }
+  } catch (err) {
+    console.error(err);
+  }
 }

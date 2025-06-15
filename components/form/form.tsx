@@ -30,7 +30,7 @@ export interface DefaultFormData {
   [key: string]: unknown;
 }
 
-export type actionResult = {
+export type ActionResult = {
   redirect?: string;
   message?: string;
   error?: { path: string; message: string };
@@ -50,7 +50,7 @@ interface FormProps {
   fields: FormField_[];
   validation?: Rules;
   data?: DefaultFormData;
-  action?: (data: Record<string, unknown>) => Promise<actionResult>;
+  action?: (data: Record<string, unknown>) => Promise<ActionResult>;
   buttons?: ((props: Partial<FormState<DefaultFormData>>) => JSX.Element)[];
   render?: FormRender;
   children?: FormRender;

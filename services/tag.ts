@@ -51,12 +51,11 @@ export const tagService: DataService<typeof tags> = {
     db.query.tags.findFirst({ where: eq(tags.id, Number(id)) }),
 
   create: (data: typeof tags.$inferInsert) =>
-    db.insert(tags).values(data).returning(),
+    db.insert(tags).values(data),
 
   update: (data: typeof tags.$inferInsert) =>
     db
       .update(tags)
       .set(data)
-      .where(eq(tags.id, Number(data.id)))
-      .returning(),
+      .where(eq(tags.id, Number(data.id))),
 };

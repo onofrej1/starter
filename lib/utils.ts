@@ -6,7 +6,23 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function random(list: unknown[]) {
-  return list[Math.floor(Math.random() * list.length)];
+    return list[Math.floor(Math.random() * list.length)];
+}
+
+export function randomValues(list: unknown[], count: number, unique = false) {
+  if (list.length < count) {
+    throw new Error('Count must be less or equal to list length');
+  }
+
+  const values: unknown[] = [];
+  do {
+    const value = list[Math.floor(Math.random() * list.length)];
+    if (unique && values.includes(value)) {
+      continue;
+    } 
+    values.push(value);
+  } while (values.length !== count)
+  return values;
 }
 
 function isErrorWithMessage(error: unknown): error is ErrorWithMessage {

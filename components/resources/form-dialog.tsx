@@ -28,7 +28,6 @@ export default function ResourceFormDialog(props: ResourceFormDialogProps) {
   const [open, setOpen] = useState(isOpen);
 
   useEffect(() => {
-    console.log('set is open', isOpen);
     setOpen(isOpen);
   }, [isOpen]);
   
@@ -66,7 +65,7 @@ export default function ResourceFormDialog(props: ResourceFormDialogProps) {
           validation={rules}
           data={data}
           render={renderForm}
-          //action={submitForm}
+          action={submitForm}
         />
       </DialogContent>
     </Dialog>

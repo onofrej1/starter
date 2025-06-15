@@ -5,10 +5,12 @@ import {
 import { useState } from "react";
 import { deleteFile, uploadFiles } from "@/actions/files";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { DrizzleResource, createResource, updateResource } from "@/actions/resources";
+import { create, update } from "@/actions/resources";
+import { DrizzleResource } from "@/lib/resources";
+import { ResourceData } from "@/services";
 //import { MutationFunction } from "@/api";
 
-type MutationFunction = typeof createResource | typeof updateResource;
+type MutationFunction = typeof create | typeof update;
 
 export function useSubmitForm(resource: DrizzleResource, fields: FormField[], mutationFn: MutationFunction) {
   const queryClient = useQueryClient();
@@ -18,7 +20,9 @@ export function useSubmitForm(resource: DrizzleResource, fields: FormField[], mu
   const [responseData, setResponseData] = useState<Awaited<ReturnType<MutationFunction>>>();
 
   const { mutate } = useMutation({
-    mutationFn,
+    mutationFn: ({ resource, data }: { resource: DrizzleResource, data: Record<string, unknown>}) => {
+      return mutationFn(resource, data);
+    },
     onSuccess: (data) => {
       setStatus('success');
       setResponseData(data);
@@ -31,7 +35,7 @@ export function useSubmitForm(resource: DrizzleResource, fields: FormField[], mu
     }
   });
 
-  const submitForm = async (data: Record<string, any>) => {
+  const submitForm = async (data: Record<string, unknown> /*ResourceData*/) => {
     const uploadData = new FormData();
       const uploadFields = fields.filter((f) => f.type === "upload");
 
@@ -56,7 +60,8 @@ export function useSubmitForm(resource: DrizzleResource, fields: FormField[], mu
         await uploadFiles(uploadData);
       }
 
-      return mutate({ resource, data });
+      await mutate({ resource, data });
+      return { message: 'Test'}
   };
 
   return { submitForm, status, responseData };

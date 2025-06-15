@@ -1,8 +1,9 @@
 //import { toggleEnableComments, updateStatus } from "@/actions/posts";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 //import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
-import { Post } from "@/db/schema";
+import { Category, Post } from "@/db/schema";
 //import { posts } from "@/db/schema";
 import { Resource } from "@/types/resources";
 import { CreatePost } from "@/validation";
@@ -135,7 +136,7 @@ const post: Resource = {
     {
       name: "categories",
       header: "Categories",
-      /*filter: {
+      filter: {
         label: "Category", 
         placeholder: "Search categories...",
         //icon: Text,
@@ -145,16 +146,18 @@ const post: Resource = {
         resource: "categories",
         //renderOption: (row: Category) => row.title,
         search: "categories_",
-      },*/
-      /*render: ({ row }) => (
+      },
+      render: ({ row }) => (
         <span className="flex gap-2">
-          {row.categories?.map((category: Category) => (
+          {(row.original as Post).id}
+
+          {/*(row.original as Post).categories?.map((category: Category) => (
             <Badge key={category.id} variant="outline">
               {category.title}
             </Badge>
-          ))}
+          ))*/}
         </span>
-      ),*/
+      ),
     },
     
   ],
