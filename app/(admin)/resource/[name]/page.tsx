@@ -1,5 +1,4 @@
 "use client";
-import { Table } from "@/components/resources/table/table";
 import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
@@ -10,14 +9,18 @@ import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton";
 import { ResourceContext, useContext } from "@/resource-context";
 import { getAll } from "@/actions/resources";
 import { Filter } from "@/lib/resources";
-import { OrderBy } from "@/services/resource";
+import { OrderBy, Search } from "@/services/resource";
+import { parseJson } from "@/lib/utils";
+import { Table as DrizzleTable } from "drizzle-orm";
+import { Table } from "@/components/resources/table/table";
+import { getValidFilters } from "@/lib/filter-data";
 
 export default function Resource() {
   const searchParams = useSearchParams();
   const [openAddItem, setOpenAddItem] = useState(false);
 
   const {
-    resource: { list, relations = [], resource, advancedFilter = false },
+    resource: { list, relations = [], resource, advancedFilter },
   } = useContext(ResourceContext);
 
   console.log(relations);
@@ -26,25 +29,25 @@ export default function Resource() {
     page,
     perPage,
     sort = "",
-    joinOperator: operator = 'AND',
+    joinOperator: operator = 'and',
     filters,
   } = Object.fromEntries(searchParams.entries());
+
+  //const filters = getValidFilters(rawFilters);
 
   const baseFilters: Filter[] = [];
   if (!advancedFilter) {
     list.map(col => col.filter).filter(f => f !== undefined).forEach((field) => {
       const value = searchParams.get(field.name);
       const isMultiSelect = field.type === "multiSelect";
-      //const isMultiSelect = false;
 
       if (value) {
         baseFilters.push({
-          id: field.name,
+          id: field.name as keyof DrizzleTable,
           variant: field.type,
-          operator: isMultiSelect ? "eq" : "ilike",
+          operator: isMultiSelect ? "eq" : "iLike",
           value: isMultiSelect ? value.split(',') : value, 
-          search: field.name,         
-          //search: isMultiSelect ? field.search : field.name,          
+          search: isMultiSelect ? field.search : field.name,          
         });
       }
     });
@@ -52,26 +55,16 @@ export default function Resource() {
 
   const skip = (Number(page) || 1) - 1;
   const take = Number(perPage) || 10;
-
-  let filtersParsed: Filter[] = [];
-  try { 
-    filtersParsed = JSON.parse(filters);
-  } catch {}
-
-  let orderBy: OrderBy[] = [];
-  try {
-    orderBy = JSON.parse(sort);
-  } catch {}
-
   const pagination = {
     take,
     skip: skip * take,
   };
+  const orderBy: OrderBy[] = parseJson(sort, []);
 
-  const filters_ = advancedFilter ? filtersParsed : baseFilters;
-  const search = {
-    filters: filters_,
-    operator
+  const filterQuery = advancedFilter ? getValidFilters(parseJson(filters, [])) : baseFilters;
+  const search: Search<DrizzleTable> = {
+    filters: filterQuery,
+    operator: operator as 'and' | 'or'
   };
 
   const { promise } = useQuery({
@@ -83,7 +76,7 @@ export default function Resource() {
       skip,
       take,
       operator,
-      JSON.stringify(filters_),
+      JSON.stringify(filterQuery),
       JSON.stringify(sort),
     ],    
 
@@ -94,9 +87,7 @@ export default function Resource() {
       orderBy,
       //relations,      
      ),
-  });
-
-  console.log(promise);
+  });  
   
   return (
     <div className="w-full">

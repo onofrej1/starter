@@ -8,12 +8,12 @@ import ResourceFormDialog from "../form-dialog";
 import { TableData } from "@/types/resources";
 import { ResourceContext, useContext } from "@/resource-context";
 import { use, useEffect, useState } from "react";
-import { DataTableAdvancedToolbar } from "@/components/data-table/data-table-advanced-toolbar";
-import { DataTableFilterList } from "@/components/data-table/data-table-filter-list";
+import { DataTableAdvancedToolbar } from "@/components/data-table/toolbar/data-table-advanced-toolbar";
+import { DataTableFilterList } from "@/components/data-table/filter/data-table-filter-list";
 import { DataTableSortList } from "@/components/data-table/data-table-sort-list";
 import { useDataTable } from "@/hooks/use-data-table";
 import { ColumnDef } from "@tanstack/react-table";
-import { DataTableToolbar } from "@/components/data-table/data-table-toolbar";
+import { DataTableToolbar } from "@/components/data-table/toolbar/data-table-toolbar";
 
 interface TableProps {
   dataPromise: Promise<[ data: TableData[], pageCount: number ]>;
@@ -57,7 +57,7 @@ export function Table(props: TableProps) {
   });
   
   if (!initialized) return null;
-
+  
   return (
     <div className="mt-2">
       <DataTable table={table}>

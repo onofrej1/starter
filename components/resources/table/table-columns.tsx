@@ -1,6 +1,6 @@
 "use client";
 
-import type { ColumnDef } from "@tanstack/react-table";
+import type { ColumnDef, ColumnMeta } from "@tanstack/react-table";
 import * as React from "react";
 
 import { DataTableColumnHeader } from "@/components/data-table/data-table-column-header";
@@ -134,6 +134,9 @@ export async function getColumns({
 
       if (field.filter) {
         const filter = field.filter;
+        const meta: ColumnMeta<TableData, unknown> = filter;
+        meta.variant = filter.type;
+
         if (filter.type === "multiSelect") {
           /*const optionsData = await queryClient.fetchQuery({
             queryKey: ["getOptions", filter.resource],
@@ -145,8 +148,9 @@ export async function getColumns({
           }));
           filter.options = options;*/
         }
-        column.meta = field.filter;
+        column.meta = meta;
       }
+      
       if (field.render) {
         column.cell = (props) => {
           return field.render!(props, queryClient);

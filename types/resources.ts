@@ -3,9 +3,8 @@ import { RepeaterRenderFunc } from "@/components/form/repeater";
 import { Rules } from "@/validation";
 import { JSX } from "react";
 //import { Option } from "@/components/multiple-selector";
-import { InferSelectModel } from "drizzle-orm";
 import { CellContext } from "@tanstack/react-table";
-import { categories, posts, tags } from "@/db/schema";
+import { Category, Post, Tag } from "@/db/schema";
 import { QueryClient } from "@tanstack/react-query";
 import { DrizzleResource } from "@/lib/resources";
 
@@ -29,9 +28,9 @@ export interface MultiSelectOption {
 }
 
 export type TableData = 
-| InferSelectModel<typeof categories>
-| InferSelectModel<typeof posts>
-| InferSelectModel<typeof tags>;
+| Category
+| Post
+| Tag;
 
 export interface TableHeader {
   name: string;

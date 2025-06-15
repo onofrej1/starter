@@ -20,15 +20,15 @@ export type OrderBy = {
   desc: boolean;
 };
 
-export type Search = {
-  filters: Filter[],
-  operator: string
+export type Search<T = Table> = {
+  filters: Filter<T>[],
+  operator: 'and' | 'or'
 }
 
 export type ResourceData = Record<string, string | number | boolean>;
 
 export interface DataService<T extends Table> {
-  getAll: (pagination: Pagination, search: Search, orderBy: OrderBy[]) => Promise<GetAllReturnType<T>>;
+  getAll: (pagination: Pagination, search: Search<T>, orderBy: OrderBy[]) => Promise<GetAllReturnType<T>>;
   get: (id: number) => Promise<InferSelectModel<T> | undefined>;
   create: (data: InferInsertModel<T>) => Promise<InferInsertModel<T>[]>;
   update: (data: InferInsertModel<T>) => Promise<InferInsertModel<T>[]>;

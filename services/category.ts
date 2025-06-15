@@ -1,6 +1,4 @@
 import {
-  and,
-  or,
   count,
   eq,
   desc,
@@ -8,24 +6,28 @@ import {
 } from "drizzle-orm";
 import { db } from "@/db";
 import { categories, Category, CategoryTable, NewCategory } from "@/db/schema";
-import { searchResource } from "@/lib/resources";
 import { Pagination, DataService, OrderBy, Search } from "./resource";
+import { filterData } from "@/lib/filter-data";
 
 export const categoryService: DataService<CategoryTable> = {
   getAll: async (
     pagination: Pagination,    
-    search: Search,
+    search: Search<CategoryTable>,
     orderBy: OrderBy[],
   ) => {
     const { take, skip } = pagination;
     const { filters, operator } = search;
 
-    const where = searchResource(categories, filters);
+    const where = filterData({
+      table: categories,
+      filters: filters,
+      joinOperator: operator,
+    });
 
     const rowCount = await db
       .select({ count: count() })
       .from(categories)
-      .where(and(...where));
+      .where(where)
 
     const pageCount = Math.ceil(rowCount[0].count / Number(take));
 
@@ -37,7 +39,7 @@ export const categoryService: DataService<CategoryTable> = {
     const data = await db
       .select()
       .from(categories)
-      .where(operator === "AND" ? and(...where) : or(...where))
+      .where(where)
       .limit(take)
       .offset(skip)
       .orderBy(...orderByQuery);

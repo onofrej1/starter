@@ -1,7 +1,7 @@
 //import { FormField, TableData } from "@/types/resources";
 import { categories, posts, tags } from "@/db/schema";
 import { FilterVariant } from "@/types/data-table";
-import { eq, ilike, ne, Table } from "drizzle-orm";
+import { AnyColumn, eq, ilike, ne, Table } from "drizzle-orm";
 
 export const resources = {
   categories: categories,
@@ -27,12 +27,20 @@ export function getOrderBy(input: string) {
   return sort.map((value) => ({ [value.id]: value.desc ? "desc" : "asc" }));
 }
 
-export type Filter = {
+export type FilterOld = {
   id: string;
   value: string | string[];
   operator: string;  
   variant: FilterVariant;
   search: string;
+}
+
+export type Filter<T = Table> = {
+  value: string | string[];
+  operator: string;  
+  variant: FilterVariant;
+  search: string;
+  id: Extract<keyof T, string>;
 }
 
 export function searchResource(resource: Table, filters: Filter[]) {
@@ -49,12 +57,13 @@ export function searchResource(resource: Table, filters: Filter[]) {
     let where = {};
     let value = filter.value;
     const operator = filter.operator;
+    const key = filter.id; //keyof InferSelectModel<typeof resource>;
 
     if (["text"].includes(filter.variant)) {
       if (value) {
         value = operator === 'ilike' ? '%'+value+'%' : value;
         // @ts-expect-error eee
-        where = oper[operator](resource[filter.id], value);
+        where = oper[operator](resource[key] as AnyColumn, value);
         query.push(where);
 
       }

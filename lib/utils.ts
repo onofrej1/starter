@@ -26,6 +26,14 @@ type ErrorWithMessage = {
   message: string;
 };
 
+export function parseJson(json: string, defaultData = {}) {
+  try { 
+    return JSON.parse(json);
+  } catch {
+    return defaultData;
+  }
+}
+
 function toErrorWithMessage(maybeError: unknown): ErrorWithMessage {
   if (isErrorWithMessage(maybeError)) return maybeError;
 
