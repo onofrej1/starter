@@ -4,6 +4,9 @@ import { DrizzleResource, Filter, Resources } from "@/lib/resources";
 import { postService } from "./post";
 import { tagService } from "./tag";
 import { QueryResult } from "pg";
+import { NewTag } from "@/db/schema/tags";
+import { NewCategory } from "@/db/schema/categories";
+import { NewPost } from "@/db/schema/posts";
 
 export type Pagination = {
   take: number;
@@ -30,7 +33,10 @@ export type Search<T = Table> = {
   }
 } & Record<string, number | string | boolean | null>;*/
 
-export type ResourceData = Record<string, unknown>;
+export type ResourceData = 
+ & NewTag
+ & NewCategory
+ & NewPost
 
 export interface DataService<T extends Table> {
   getAll: (
@@ -38,6 +44,7 @@ export interface DataService<T extends Table> {
     search: Search<T>,
     orderBy: OrderBy[]
   ) => Promise<GetAllReturnType<T>>;
+  getOptions?: () => Promise<{ value: number, label: string }[]>,
   get: (id: number) => Promise<InferSelectModel<T> | undefined>;
   create: (data: InferInsertModel<T>) => Promise<QueryResult>;
   update: (data: InferInsertModel<T>) => Promise<QueryResult>;

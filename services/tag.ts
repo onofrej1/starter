@@ -1,9 +1,4 @@
-import {
-  count,
-  eq,
-  desc,
-  asc,  
-} from "drizzle-orm";
+import { count, eq, desc, asc } from "drizzle-orm";
 import { db } from "@/db";
 import { tags } from "@/db/schema";
 import { Pagination, DataService, OrderBy, Search } from "@/services";
@@ -11,9 +6,9 @@ import { filterData } from "@/lib/filter-data";
 
 export const tagService: DataService<typeof tags> = {
   getAll: async (
-    pagination: Pagination,    
+    pagination: Pagination,
     search: Search<typeof tags>,
-    orderBy: OrderBy[],
+    orderBy: OrderBy[]
   ) => {
     const { take, skip } = pagination;
     const { filters, operator } = search;
@@ -27,13 +22,13 @@ export const tagService: DataService<typeof tags> = {
     const rowCount = await db
       .select({ count: count() })
       .from(tags)
-      .where(where)
+      .where(where);
 
     const pageCount = Math.ceil(rowCount[0].count / Number(take));
 
     const orderByQuery = orderBy.map((item) => {
       const key = item.id as keyof typeof tags.$inferInsert;
-      return item.desc ? desc(tags[key]) : asc(tags[key])
+      return item.desc ? desc(tags[key]) : asc(tags[key]);
     });
 
     const data = await db
@@ -44,14 +39,22 @@ export const tagService: DataService<typeof tags> = {
       .offset(skip)
       .orderBy(...orderByQuery);
 
-    return [ data, pageCount ];
+    return [data, pageCount];
+  },
+
+  getOptions: async () => {
+    return db
+      .select({
+        value: tags.id,
+        label: tags.title,
+      })
+      .from(tags);
   },
 
   get: (id: number) =>
     db.query.tags.findFirst({ where: eq(tags.id, Number(id)) }),
 
-  create: (data: typeof tags.$inferInsert) =>
-    db.insert(tags).values(data),
+  create: (data: typeof tags.$inferInsert) => db.insert(tags).values(data),
 
   update: (data: typeof tags.$inferInsert) =>
     db

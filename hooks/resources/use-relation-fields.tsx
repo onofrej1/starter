@@ -1,4 +1,4 @@
-/*"use client";
+"use client";
 import { getOptions } from "@/api";
 import {
   ForeignKeyType,
@@ -55,4 +55,3 @@ export function useRelationFields(formFields: FormField[], formData: Record<stri
 
   return { fields, data };
 }
-*/

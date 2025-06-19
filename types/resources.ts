@@ -2,7 +2,7 @@ import { FormRender } from "@/components/form/form";
 import { RepeaterRenderFunc } from "@/components/form/repeater";
 import { Rules } from "@/validation";
 import { JSX } from "react";
-//import { Option } from "@/components/multiple-selector";
+import { Option } from "@/components/multiple-selector";
 import { CellContext } from "@tanstack/react-table";
 import { Category, Post, Tag } from "@/db/schema";
 import { QueryClient } from "@tanstack/react-query";
@@ -90,12 +90,12 @@ export interface ForeignKeyType extends BaseFormType {
   renderLabel: (data: Record<string, any>) => string | JSX.Element;
 }*/
 
-/*export interface MultipleSelectorType extends BaseFormType {
+export interface MultipleSelectorType extends BaseFormType {
   type: "manyToMany";
   options?: Option[];
-  resource: DrizzleModel;
+  resource: string;
   renderLabel: (data: Record<string, any>) => string | JSX.Element;
-}*/
+}
 
 export interface DatePickerType extends BaseFormType {
   type: "date-picker";

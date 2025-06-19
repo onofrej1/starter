@@ -43,12 +43,14 @@ export const CreateTag = z.object({
 export const CreatePost = z.object({
   id: z.number().optional(),
   title: stringValue,
-  status: stringValue,
-  content: richText,
-  authorId: stringValue,
-  categories: many2many,
-  tags: many2many,
-  cover: z.record(z.string(), z.any()).optional(), //z.string().optional().nullable(),
+  //status: stringValue,
+  //content: richText,
+  //authorId: stringValue,
+  //categories: many2many,
+  //tags: many2many,
+  cover: stringValue,
+  categoryId: stringValue,
+  //cover: z.record(z.string(), z.any()).optional(), //z.string().optional().nullable(),
 });
 
 export const ContactForm = z.object({

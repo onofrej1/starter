@@ -48,22 +48,30 @@ const post: Resource = {
   ],*/
   form: [
     { name: "title", type: "text", label: "Title" },
-    { name: "content", type: "richtext", label: "Content" },
-    { name: "status", type: "text", label: "Status" },
+    { name: "content", type: "text", label: "Content" },
+    //{ name: "status", type: "text", label: "Status" },
     {
       name: "cover",
-      type: "upload",
+      type: "text",
       label: "Cover",
-      dir: 'posts',
+      //dir: 'posts',
     },
     {
+      name: "categoryId",
+      type: "foreignKey",
+      relation: "category",
+      label: "Category",
+      resource: "categories",
+      renderLabel: (row) => `${row.name}`,
+    },
+    /*{
       name: "authorId",
       type: "foreignKey",
       relation: "author",
       label: "Author",
       resource: "users",
       renderLabel: (row) => `${row.lastName} ${row.firstName}`,
-    },
+    },*/
     /*{
       name: "categories",
       type: "manyToMany",

@@ -26,8 +26,15 @@ import Switch from "./base/switch";
 //import { MultipleSelector } from "./multiple-selector";
 import { z } from "zod";
 
-export interface DefaultFormData {
-  [key: string]: unknown;
+export interface FormDataValue {
+  //[key: string]: unknown;
+  file: File,
+  previousFile: File,
+  isDirty: boolean,
+}
+
+export type DefaultFormData = {
+  [key: string]: string | { file: File }
 }
 
 export type ActionResult = {
@@ -46,17 +53,17 @@ export type FormRenderProps = {
 
 export type FormRender = (props: FormRenderProps) => JSX.Element;
 
-interface FormProps {
+interface FormProps<T> {
   fields: FormField_[];
   validation?: Rules;
   data?: DefaultFormData;
-  action?: (data: Record<string, unknown>) => Promise<ActionResult>;
+  action?: (data: T) => Promise<ActionResult>;
   buttons?: ((props: Partial<FormState<DefaultFormData>>) => JSX.Element)[];
   render?: FormRender;
   children?: FormRender;
 }
 
-export default function Form_({
+export default function Form_<T = DefaultFormData>({
   fields,
   validation,
   data,
@@ -64,7 +71,7 @@ export default function Form_({
   buttons,
   render,
   children,
-}: FormProps) {
+}: FormProps<T>) {
   const { replace } = useRouter();
 
   const form = useForm({
@@ -83,7 +90,7 @@ export default function Form_({
     console.log("Validation errors:", errors);
   }
 
-  const submitForm = async (data: Record<string, unknown>) => {
+  const submitForm = async (data: T) => {
     console.log(data);
     if (!action) return;
 

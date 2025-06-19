@@ -47,6 +47,15 @@ export const categoryService: DataService<typeof categories> = {
     return [ data, pageCount ];
   },
 
+  getOptions: async () => {
+    return db
+    .select({
+      value: categories.id,
+      label: categories.name,
+    })
+    .from(categories)
+  },   
+
   get: (id: number) =>
     db.query.categories.findFirst({ where: eq(categories.id, Number(id)) }),
 

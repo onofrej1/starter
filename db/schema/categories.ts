@@ -5,7 +5,7 @@ import { posts } from ".";
 
 export const categories = pgTable("categories", {
   id: serial("id").primaryKey(),
-  name: varchar({ length: 128 }),
+  name: varchar({ length: 128 }).notNull(),
   description: varchar({ length: 128 }),
   slug: varchar({ length: 128 }),
 });
