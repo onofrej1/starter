@@ -34,7 +34,7 @@ export interface FormDataValue {
 }
 
 export type DefaultFormData = {
-  [key: string]: string | { file: File }
+  [key: string]: string | number | boolean | null | { file: File, previousFile: File, isDirty: boolean }
 }
 
 export type ActionResult = {

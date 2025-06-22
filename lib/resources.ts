@@ -9,14 +9,13 @@ export const resources = {
   posts: posts,
 };
 
-export enum Resources {
+/*export enum Resource {
   Categories = 'categories',
   Tags = 'tags',
   Posts = 'posts'
-}
+}*/
 
-export type DrizzleResource = keyof typeof resources;
-
+export type Resource = keyof typeof resources;
 
 export function getOrderBy(input: string) {
   if (!input) {

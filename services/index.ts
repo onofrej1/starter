@@ -1,6 +1,6 @@
 import { InferInsertModel, InferSelectModel, Table } from "drizzle-orm";
 import { categoryService } from "@/services/category";
-import { DrizzleResource, Filter, Resources } from "@/lib/resources";
+import { Filter, Resource } from "@/lib/resources";
 import { postService } from "./post";
 import { tagService } from "./tag";
 import { QueryResult } from "pg";
@@ -25,14 +25,6 @@ export type Search<T = Table> = {
   operator: "and" | "or";
 };
 
-/*export type ResourceData = { 
-  [key: string]: { 
-    file: File,
-    previousFile: File,
-    isDirty: boolean,
-  }
-} & Record<string, number | string | boolean | null>;*/
-
 export type ResourceData = 
  & NewTag
  & NewCategory
@@ -51,10 +43,10 @@ export interface DataService<T extends Table> {
   //delete: (id: string) => Promise<T>;*/
 }
 
-export function getDataService(resourceName: DrizzleResource) {
+export function getDataService(resource: Resource) {
   return {
-    [Resources.Categories]: categoryService,
-    [Resources.Tags]: tagService,
-    [Resources.Posts]: postService,
-  }[resourceName];
+    'categories': categoryService,
+    'tags': tagService,
+    'posts': postService,
+  }[resource];
 }

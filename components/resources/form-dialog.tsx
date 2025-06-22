@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import Form, { DefaultFormData } from "@/components/form/form";
+import Form from "@/components/form/form";
 //import { useRelationFields } from "@/hooks/resources/use-relation-fields";
 import { useQuery } from "@tanstack/react-query";
 import {

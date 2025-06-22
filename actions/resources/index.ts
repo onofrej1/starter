@@ -1,6 +1,6 @@
 "use server";
 
-import { DrizzleResource } from "@/lib/resources";
+import { Resource } from "@/lib/resources";
 import {
   getDataService,
   OrderBy,
@@ -10,7 +10,7 @@ import {
 } from "@/services";
 
 export async function getAll(
-  resource: DrizzleResource,
+  resource: Resource,
   pagination: Pagination,
   search: Search,
   orderBy: OrderBy[]
@@ -18,19 +18,19 @@ export async function getAll(
   return getDataService(resource).getAll(pagination, search, orderBy);
 }
 
-export async function get(resource: DrizzleResource, id: number) {
+export async function get(resource: Resource, id: number) {
   return getDataService(resource).get(id);
 }
 
 export async function create(
-  resource: DrizzleResource,
+  resource: Resource,
   data: ResourceData
 ) {
   return getDataService(resource).create(data);
 }
 
 export async function update(
-  resource: DrizzleResource,
+  resource: Resource,
   data: ResourceData
 ) {
   return getDataService(resource).update(data);

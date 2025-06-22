@@ -1,6 +1,6 @@
-import { categories, type Category } from "./categories";
-import { tags, type Tag } from "./tags";
-import { posts, type Post } from "./posts";
+import { categories, type Category, type NewCategory } from "./categories";
+import { tags, type Tag, type NewTag } from "./tags";
+import { posts, type Post, type NewPost } from "./posts";
 import { postsToTags } from "./posts-to-tags";
 
 export {
@@ -9,6 +9,9 @@ export {
   posts,
   postsToTags,
   type Category,
+  type NewCategory,
   type Tag,
+  type NewTag,
   type Post,
+  type NewPost
 };

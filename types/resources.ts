@@ -6,7 +6,7 @@ import { Option } from "@/components/multiple-selector";
 import { CellContext } from "@tanstack/react-table";
 import { Category, Post, Tag } from "@/db/schema";
 import { QueryClient } from "@tanstack/react-query";
-import { DrizzleResource } from "@/lib/resources";
+import { Resource as DataResource } from "@/lib/resources";
 
 interface BaseFormType {
   name: string;
@@ -159,7 +159,7 @@ type Resource = {
   model: string;
   menuIcon: string;
 
-  resource: DrizzleResource;
+  resource: DataResource;
   relations?: string[];
   rules: Rules;
 

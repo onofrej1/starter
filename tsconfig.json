@@ -23,5 +23,5 @@
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules", "generator/templates"]
+  "exclude": ["node_modules", "generator/templates", "hooks/resources/use-relation-fields.tsx"]
 }

@@ -4,15 +4,14 @@ import { useState } from "react";
 import { deleteFile, uploadFiles } from "@/actions/files";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { create, update } from "@/actions/resources";
-import { DrizzleResource } from "@/lib/resources";
+import { Resource } from "@/lib/resources";
 import { ResourceData } from "@/services";
 import { DefaultFormData } from "@/components/form/form";
-//import { MutationFunction } from "@/api";
 
 type MutationFunction = typeof create | typeof update;
 
 export function useSubmitForm(
-  resource: DrizzleResource,
+  resource: Resource,
   fields: FormField[],
   mutationFn: MutationFunction
 ) {
@@ -28,7 +27,7 @@ export function useSubmitForm(
       resource,
       data,
     }: {
-      resource: DrizzleResource;
+      resource: Resource;
       data: Record<string, unknown>;
     }) => {
       return mutationFn(resource, data as ResourceData);
@@ -50,21 +49,23 @@ export function useSubmitForm(
     const uploadFields = fields.filter((f) => f.type === "upload");
 
     for (const field of uploadFields) {
-      const { file, previousFile, isDirty } = data[field.name];
-      if (!isDirty) {
-        delete data[field.name];
-        continue;
-      }
-      if (previousFile) {
-        await deleteFile(previousFile.name);
-      }
-      if (file) {
-        uploadData.append(field.name, file, file.name);
-        data[field.name] = file.name;
-        //data[field.name] = file.name as unknown as FormDataValue;
-      } else if (data[field.name]) {
-        //data[field.name] = null as unknown as FormDataValue;
-      }
+      const value = data[field.name];
+      if (value && typeof value === 'object' && 'file' in value) {
+        const { file, previousFile, isDirty } = value;
+        if (!isDirty) {
+          delete data[field.name];
+          continue;
+        }
+        if (previousFile) {
+          await deleteFile(previousFile.name);
+        }
+        if (file) {
+          uploadData.append(field.name, file, file.name);
+          data[field.name] = file.name;
+        } else if (data[field.name]) {
+          data[field.name] = null;
+        }
+      } 
     }
 
     if (!uploadData.entries().next().done) {
