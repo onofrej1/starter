@@ -1,5 +1,13 @@
 import { z } from "zod";
 
+const many2many = z
+  .array(z.object({ value: z.string(), label: z.string() }))
+  .transform((arr) => {
+    return arr.map((v) => v.value);
+  })
+  .optional()
+  .default([]);
+
 /*const many2many = z
   .array(z.object({ value: z.number(), label: z.string() }))
   .transform((arr) => {
@@ -49,7 +57,7 @@ export const CreatePost = z.object({
   //content: richText,
   //authorId: stringValue,
   //categories: many2many,
-  //tags: many2many,
+  postsToTags: many2many,
   cover: stringValue,
   categoryId: z.coerce.string().trim().min(1),
   //cover: z.record(z.string(), z.any()).optional(), //z.string().optional().nullable(),

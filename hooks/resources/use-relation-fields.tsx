@@ -29,9 +29,10 @@ export function useRelations(formFields: FormField[], formData: Record<string, a
 
         if (field.type === 'manyToMany' && formData?.id && formData[field.name]) {
           const optionValues = formData[field.name].map(
-            (value: { id: string }) => {
-              const option = field.options?.find((o) => o.value === value.id);
-              return { label: option?.label, value: value.id.toString() };
+            (valueObj: Record<string, number>) => {
+              const value = valueObj[field.field].toString();
+              const option = field.options?.find((o) => o.value === value);
+              return { label: option?.label, value };
             }
           );
           formData[field.name] = optionValues;

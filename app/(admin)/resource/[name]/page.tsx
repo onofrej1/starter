@@ -23,8 +23,6 @@ export default function Resource() {
     resource: { list, relations = [], resource, advancedFilter },
   } = useContext(ResourceContext);
 
-  console.log(relations);
-
   const {
     page,
     perPage,

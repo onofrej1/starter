@@ -1,9 +1,4 @@
-import {
-  count,
-  eq,
-  desc,
-  asc,  
-} from "drizzle-orm";
+import { count, eq, desc, asc } from "drizzle-orm";
 import { db } from "@/db";
 import { posts } from "@/db/schema";
 import { Pagination, DataService, OrderBy, Search } from "@/services";
@@ -11,9 +6,9 @@ import { filterData } from "@/lib/filter-data";
 
 export const postService: DataService<typeof posts> = {
   getAll: async (
-    pagination: Pagination,    
+    pagination: Pagination,
     search: Search<typeof posts>,
-    orderBy: OrderBy[],
+    orderBy: OrderBy[]
   ) => {
     const { take, skip } = pagination;
     const { filters, operator } = search;
@@ -27,13 +22,13 @@ export const postService: DataService<typeof posts> = {
     const rowCount = await db
       .select({ count: count() })
       .from(posts)
-      .where(where)
+      .where(where);
 
     const pageCount = Math.ceil(rowCount[0].count / Number(take));
 
     const orderByQuery = orderBy.map((item) => {
       const key = item.id as keyof typeof posts.$inferInsert;
-      return item.desc ? desc(posts[key]) : asc(posts[key])
+      return item.desc ? desc(posts[key]) : asc(posts[key]);
     });
 
     const data = await db
@@ -44,27 +39,39 @@ export const postService: DataService<typeof posts> = {
       .offset(skip)
       .orderBy(...orderByQuery);
 
-    return [ data, pageCount ];
+    return [data, pageCount];
   },
 
   getOptions: async () => {
-      return db
+    return db
       .select({
         value: posts.id,
         label: posts.title,
       })
-      .from(posts)
-    }, 
+      .from(posts);
+  },
 
   get: (id: number) =>
-    db.query.posts.findFirst({ where: eq(posts.id, Number(id)) }),
+    db.query.posts.findFirst({
+      where: eq(posts.id, Number(id)),
+      with: {
+        postsToTags: {
+          columns: {
+            tagId: true,
+          },
+        },
+      },
+    }),
 
-  create: (data: typeof posts.$inferInsert) =>
-    db.insert(posts).values(data),
+  create: (data: typeof posts.$inferInsert) => db.insert(posts).values(data),
 
-  update: (data: typeof posts.$inferInsert) =>
-    db
-      .update(posts)
-      .set(data)
-      .where(eq(posts.id, Number(data.id))),
+  update: (data: typeof posts.$inferInsert) => {
+    console.log('update data', data);
+
+    return db
+    .update(posts)
+    .set(data)
+    .where(eq(posts.id, Number(data.id)));
+  }
+    
 };

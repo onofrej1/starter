@@ -18,7 +18,7 @@ interface BaseFormType {
 
 export interface SelectOption {
   label: string;
-  value: string | number;
+  value: string;
 }
 
 export interface MultiSelectOption {
@@ -94,6 +94,7 @@ export interface MultipleSelectorType extends BaseFormType {
   type: "manyToMany";
   options?: Option[];
   resource: ResourceName;
+  field: string;
   renderLabel: (data: Record<string, any>) => string | JSX.Element;
 }
 
@@ -150,8 +151,8 @@ type FormField =
   | UploadType
   | RepeaterType
   | DateTimePickerType
-  | SwitchType;
-  //| MultipleSelectorType;
+  | SwitchType
+  | MultipleSelectorType;
 
 type Resource = {
   name: string;

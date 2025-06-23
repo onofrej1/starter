@@ -69,7 +69,6 @@ export function searchResource(resource: Table, filters: Filter[]) {
     }
 
     if (["multiSelect"].includes(filter.variant)) {
-      console.log('multiselect');
       if (value) {
         value = operator === 'ilike' ? '%'+value+'%' : value;
         // @ts-expect-error eee

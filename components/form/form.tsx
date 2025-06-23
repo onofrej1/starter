@@ -23,7 +23,7 @@ import RepeaterInput from "./repeater";
 import { Form, FormField } from "@/components/ui/form";
 //import { DateTimePicker } from "./datetime-picker";
 import Switch from "./base/switch";
-//import { MultipleSelector } from "./multiple-selector";
+import { MultipleSelector } from "./multiple-selector";
 import { z } from "zod";
 
 export interface FormDataValue {
@@ -91,7 +91,6 @@ export default function Form_<T = DefaultFormData>({
   }
 
   const submitForm = async (data: T) => {
-    console.log(data);
     if (!action) return;
 
     try {
@@ -215,24 +214,24 @@ export default function Form_<T = DefaultFormData>({
           />
         )}
 
-        {/*type === "manyToMany" && (
+        {type === "manyToMany" && (
           <FormField
             control={form.control}
             name={name}
             render={({ field }) => {
               return (
                 <>
-                  {<MultipleSelector
+                  <MultipleSelector
                     field={field}
                     label={label}
                     className={className}
                     options={formField.options!}
-                  />}
+                  />
                 </>
               );
             }}
           />
-        )*/}
+        )}
 
         {type === "richtext" && (
           <FormField

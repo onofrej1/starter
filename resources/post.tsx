@@ -78,14 +78,15 @@ const post: Resource = {
       label: "Categories",
       resource: "categories",
       renderLabel: (row) => row.title,
-    },
+    },*/
     {
-      name: "tags",
+      name: "postsToTags",
       type: "manyToMany",
       label: "Tags",
       resource: "tags",
+      field: 'tagId',
       renderLabel: (row) => row.title,
-    },*/
+    },
   ],
   list: [
     {
