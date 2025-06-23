@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-const many2many = z
+/*const many2many = z
   .array(z.object({ value: z.number(), label: z.string() }))
   .transform((arr) => {
     return arr.map((v) => v.value);
@@ -12,36 +12,38 @@ const richText = z
   .object({ type: z.string(), content: z.array(z.any()) })
   .transform((obj) => {
     return JSON.stringify(obj);
-  });
+  });*/
 
 const stringValue = z.string().trim().min(1);
-const numberValue = z.coerce.number();
-const dateValue = z.coerce.date();
+//const numberValue = z.coerce.number();
+//const dateValue = z.coerce.date();
+const emailValue = z.string().email();
+const idValue = z.number().optional();
 
 export const RegisterUser = z.object({
   firstName: stringValue,
   lastName: stringValue,
-  email: z.string().email(),
+  email: emailValue,
   password: stringValue,
 });
 
 export const LoginUser = z.object({
-  email: z.string().email(),
-  password: z.string().min(2),
+  email: emailValue,
+  password: stringValue,
 });
 
 export const CreateCategory = z.object({
-  id: z.number().optional(),
+  id: idValue,
   name: stringValue,
 });
 
 export const CreateTag = z.object({
-  id: z.number().optional(),
+  id: idValue,
   title: stringValue,
 });
 
 export const CreatePost = z.object({
-  id: z.number().optional(),
+  id: idValue,
   title: stringValue,
   //status: stringValue,
   //content: richText,
@@ -49,22 +51,22 @@ export const CreatePost = z.object({
   //categories: many2many,
   //tags: many2many,
   cover: stringValue,
-  categoryId: stringValue,
+  categoryId: z.coerce.string().trim().min(1),
   //cover: z.record(z.string(), z.any()).optional(), //z.string().optional().nullable(),
 });
 
 export const ContactForm = z.object({
   name: stringValue,
-  email: z.string().email(),
+  email: emailValue,
   message: stringValue,
 });
 
 export const ResetPasswordRequest = z.object({
-  email: z.string().email(),
+  email: emailValue,
 });
 
 export const ResetPassword = z.object({
-  password: z.string().email(),
+  password: emailValue,
 });
 
 export const ChangePassword = z.object({
@@ -83,7 +85,7 @@ export type Rules =
   | typeof ContactForm
   | typeof ResetPassword
 
-export type RegisterUserType = z.infer<typeof RegisterUser>;
+/*export type RegisterUserType = z.infer<typeof RegisterUser>;
 export type LoginUserType = z.infer<typeof LoginUser>;
 export type ChangePasswordType = z.infer<typeof ChangePassword>;
 export type CreatePostType = z.infer<typeof CreatePost>;
@@ -91,4 +93,4 @@ export type CreateCategoryType = z.infer<typeof CreateCategory>;
 export type CreateTagType = z.infer<typeof CreateTag>;
 export type ResetPasswordRequestType = z.infer<typeof ResetPasswordRequest>;
 export type ContactFormType = z.infer<typeof ContactForm>;
-export type ResetPasswordType = z.infer<typeof ResetPassword>;
+export type ResetPasswordType = z.infer<typeof ResetPassword>;*/

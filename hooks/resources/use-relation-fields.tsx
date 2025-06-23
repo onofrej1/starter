@@ -1,5 +1,5 @@
 "use client";
-import { getOptions } from "@/api";
+import { getOptions } from "@/actions/resources";
 import {
   ForeignKeyType,
   FormField,
@@ -10,7 +10,7 @@ import { useEffect, useState } from "react";
 
 type RelationFormType = ForeignKeyType | MultipleSelectorType;
 
-export function useRelationFields(formFields: FormField[], formData: Record<string, any>) {
+export function useRelations(formFields: FormField[], formData: Record<string, any>) {
   const [fields, setFields] = useState<FormField[]>(formFields);
   const [data, setData] = useState(formData);
   const queryClient = useQueryClient();
@@ -22,21 +22,16 @@ export function useRelationFields(formFields: FormField[], formData: Record<stri
       );
 
       for (const field of relations as RelationFormType[]) {
-        const options = await queryClient.fetchQuery({
-          queryKey: [field.resource],
+        field.options = await queryClient.fetchQuery({
+          queryKey: ['getOptions', field.resource],
           queryFn: () => getOptions(field.resource),
         });
-
-        field.options = options.map((value: any) => ({
-          value: value.id,
-          label: field.renderLabel(value),
-        }));
 
         if (field.type === 'manyToMany' && formData?.id && formData[field.name]) {
           const optionValues = formData[field.name].map(
             (value: { id: string }) => {
               const option = field.options?.find((o) => o.value === value.id);
-              return { label: option?.label, value: value.id };
+              return { label: option?.label, value: value.id.toString() };
             }
           );
           formData[field.name] = optionValues;
@@ -51,7 +46,7 @@ export function useRelationFields(formFields: FormField[], formData: Record<stri
       setFields(formData?.id ? [idField, ...formFields] : formFields);
     }
     getFields();
-  }, [formFields, formData]);
+  }, [formFields, formData, queryClient]);
 
   return { fields, data };
 }

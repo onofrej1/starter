@@ -22,16 +22,21 @@ export async function get(resource: Resource, id: number) {
   return getDataService(resource).get(id);
 }
 
+export async function getOptions(resource: Resource) {
+  const options = await getDataService(resource).getOptions();
+  return options.map(option => ({ ...option, value: option.value.toString() }));
+}
+
 export async function create(
   resource: Resource,
   data: ResourceData
 ) {
-  return getDataService(resource).create(data);
+  await getDataService(resource).create(data);
 }
 
 export async function update(
   resource: Resource,
   data: ResourceData
 ) {
-  return getDataService(resource).update(data);
+  await getDataService(resource).update(data);
 }

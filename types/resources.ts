@@ -6,7 +6,7 @@ import { Option } from "@/components/multiple-selector";
 import { CellContext } from "@tanstack/react-table";
 import { Category, Post, Tag } from "@/db/schema";
 import { QueryClient } from "@tanstack/react-query";
-import { Resource as DataResource } from "@/lib/resources";
+import { Resource as ResourceName } from "@/lib/resources";
 
 interface BaseFormType {
   name: string;
@@ -77,7 +77,7 @@ export interface SelectType extends BaseFormType {
 
 export interface ForeignKeyType extends BaseFormType {
   type: "foreignKey";
-  resource: string;
+  resource: ResourceName;
   relation: string;
   renderLabel: (data: Record<string, string>) => string | JSX.Element;
   options?: SelectOption[] | MultiSelectOption[];
@@ -86,14 +86,14 @@ export interface ForeignKeyType extends BaseFormType {
 /*export interface MultiSelectType extends BaseFormType {
   type: "m2m-notused";
   options?: SelectOption[] | MultiSelectOption[];
-  resource: PrismaModel;
+  resource: ResourceName;
   renderLabel: (data: Record<string, any>) => string | JSX.Element;
 }*/
 
 export interface MultipleSelectorType extends BaseFormType {
   type: "manyToMany";
   options?: Option[];
-  resource: string;
+  resource: ResourceName;
   renderLabel: (data: Record<string, any>) => string | JSX.Element;
 }
 
@@ -159,7 +159,7 @@ type Resource = {
   model: string;
   menuIcon: string;
 
-  resource: DataResource;
+  resource: ResourceName;
   relations?: string[];
   rules: Rules;
 
@@ -201,7 +201,7 @@ export interface SelectFilterType extends BaseFilterType {
   type: "select";
   search: string;
 
-  resource: string;
+  resource: ResourceName;
   renderOption?: (data: Record<string, string>) => string | JSX.Element;
   options?: { label: string; value: string }[];
 }
@@ -210,7 +210,7 @@ export interface MultiSelectFilterType extends BaseFilterType {
   type: "multiSelect";
   search: string;
 
-  resource: string;
+  resource: ResourceName;
   renderOption?: (data: Record<string, string>) => string | JSX.Element;
   options?: { label: string; value: string }[];
 }

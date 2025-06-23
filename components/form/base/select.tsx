@@ -14,7 +14,7 @@ import { cn } from "@/lib/utils";
 
 interface SelectOption {
   label: string;
-  value: string | number;
+  value: string;
 }
 
 interface SelectProps {
@@ -36,8 +36,8 @@ export default function FormSelect({
     <Select
       name={field.name}
       onValueChange={field.onChange}
-      defaultValue={field.value?.toString()}
-      value={field.value?.toString()}
+      defaultValue={field.value}
+      value={field.value}
     >
       <SelectTrigger className={cn(error && "text-destructive border-destructive", className)} value={field.value?.toString()}>
         <SelectValue placeholder={label} />
@@ -45,7 +45,7 @@ export default function FormSelect({
       <SelectContent>
         {options &&
           options?.map((option) => (
-            <SelectItem key={option.value} value={option.value?.toString()}>
+            <SelectItem key={option.value} value={option.value}>
               {option.label}
             </SelectItem>
           ))}

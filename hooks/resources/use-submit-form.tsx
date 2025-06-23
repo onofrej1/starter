@@ -3,17 +3,16 @@ import { FormField } from "@/types/resources";
 import { useState } from "react";
 import { deleteFile, uploadFiles } from "@/actions/files";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { create, update } from "@/actions/resources";
 import { Resource } from "@/lib/resources";
 import { ResourceData } from "@/services";
 import { DefaultFormData } from "@/components/form/form";
+import { create, update } from "@/actions/resources";
 
 type MutationFunction = typeof create | typeof update;
 
 export function useSubmitForm(
   resource: Resource,
   fields: FormField[],
-  mutationFn: MutationFunction
 ) {
   const queryClient = useQueryClient();
   type Status = "success" | "error" | "idle";
@@ -30,13 +29,14 @@ export function useSubmitForm(
       resource: Resource;
       data: Record<string, unknown>;
     }) => {
-      return mutationFn(resource, data as ResourceData);
+      const fn = data.id ? update : create;
+      return fn(resource, data as ResourceData);
     },
     onSuccess: (data) => {
       setStatus("success");
       setResponseData(data);
       queryClient.invalidateQueries({
-        queryKey: ["getResourceData", resource],
+        queryKey: ["getAll", resource],
       });
     },
     onError: () => {
@@ -73,7 +73,7 @@ export function useSubmitForm(
     }
 
     await mutate({ resource, data });
-    return { message: "Test" };
+    return { message: "Data saved" };
   };
 
   return { submitForm, status, responseData };

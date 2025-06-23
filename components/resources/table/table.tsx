@@ -16,7 +16,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { DataTableToolbar } from "@/components/data-table/toolbar/data-table-toolbar";
 
 interface TableProps {
-  dataPromise: Promise<[ data: TableData[], pageCount: number ]>;
+  dataPromise: Promise<[data: TableData[], pageCount: number]>;
 }
 
 export function Table(props: TableProps) {
@@ -26,7 +26,7 @@ export function Table(props: TableProps) {
 
   const queryClient = useQueryClient();
 
-  const [ data, pageCount ] = use(props.dataPromise);
+  const [data, pageCount] = use(props.dataPromise);
   const [initialized, setInitialized] = useState(false);
   const [tableColumns, setTableColumns] = useState<ColumnDef<TableData>[]>([]);
 
@@ -71,13 +71,13 @@ export function Table(props: TableProps) {
             <DataTableSortList table={table} />
           </DataTableToolbar>
         )}
-      </DataTable>      
-        <ResourceFormDialog
-          key="updateResource"
-          open={rowAction?.variant === "update"}
-          onOpenChange={() => setRowAction(null)}
-          id={rowAction?.row.original.id}
-        />
+      </DataTable>
+      <ResourceFormDialog
+        key={rowAction?.variant}
+        open={rowAction?.variant === "update"}
+        onOpenChange={() => setRowAction(null)}
+        id={rowAction?.row.original.id}
+      />
     </div>
   );
 }

@@ -36,7 +36,7 @@ export interface DataService<T extends Table> {
     search: Search<T>,
     orderBy: OrderBy[]
   ) => Promise<GetAllReturnType<T>>;
-  getOptions?: () => Promise<{ value: number, label: string }[]>,
+  getOptions: () => Promise<{ value: number, label: string }[]>,
   get: (id: number) => Promise<InferSelectModel<T> | undefined>;
   create: (data: InferInsertModel<T>) => Promise<QueryResult>;
   update: (data: InferInsertModel<T>) => Promise<QueryResult>;

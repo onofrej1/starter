@@ -5,40 +5,40 @@ import {
   asc,  
 } from "drizzle-orm";
 import { db } from "@/db";
-import { posts } from "@/db/schema";
-import { Pagination, DataService, OrderBy, Search } from "@/services";
+import { categories, Category, NewCategory } from "@/db/schema";
+import { Pagination, DataService, OrderBy, Search } from ".";
 import { filterData } from "@/lib/filter-data";
 
-export const postService: DataService<typeof posts> = {
+export const categoryService: DataService<typeof categories> = {
   getAll: async (
     pagination: Pagination,    
-    search: Search<typeof posts>,
+    search: Search<typeof categories>,
     orderBy: OrderBy[],
   ) => {
     const { take, skip } = pagination;
     const { filters, operator } = search;
 
     const where = filterData({
-      table: posts,
+      table: categories,
       filters: filters,
       joinOperator: operator,
     });
 
     const rowCount = await db
       .select({ count: count() })
-      .from(posts)
+      .from(categories)
       .where(where)
 
     const pageCount = Math.ceil(rowCount[0].count / Number(take));
 
     const orderByQuery = orderBy.map((item) => {
-      const key = item.id as keyof typeof posts.$inferInsert;
-      return item.desc ? desc(posts[key]) : asc(posts[key])
+      const key = item.id as keyof Category;
+      return item.desc ? desc(categories[key]) : asc(categories[key])
     });
 
     const data = await db
       .select()
-      .from(posts)
+      .from(categories)
       .where(where)
       .limit(take)
       .offset(skip)
@@ -47,24 +47,15 @@ export const postService: DataService<typeof posts> = {
     return [ data, pageCount ];
   },
 
-  getOptions: async () => {
-      return db
-      .select({
-        value: posts.id,
-        label: posts.title,
-      })
-      .from(posts)
-    }, 
-
   get: (id: number) =>
-    db.query.posts.findFirst({ where: eq(posts.id, Number(id)) }),
+    db.query.categories.findFirst({ where: eq(categories.id, Number(id)) }),
 
-  create: (data: typeof posts.$inferInsert) =>
-    db.insert(posts).values(data),
+  create: (data: NewCategory) =>
+    db.insert(categories).values(data),
 
-  update: (data: typeof posts.$inferInsert) =>
+  update: (data: NewCategory) =>
     db
-      .update(posts)
+      .update(categories)
       .set(data)
-      .where(eq(posts.id, Number(data.id))),
+      .where(eq(categories.id, Number(data.id))),
 };

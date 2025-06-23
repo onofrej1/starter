@@ -1,7 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import Form from "@/components/form/form";
-//import { useRelationFields } from "@/hooks/resources/use-relation-fields";
 import { useQuery } from "@tanstack/react-query";
 import {
   Dialog,
@@ -13,10 +12,9 @@ import {
 import { ResourceContext, useContext } from "@/resource-context";
 import { useSubmitForm } from "@/hooks/resources/use-submit-form";
 //import { useRichtextFields } from "@/hooks/resources/use-richtext-fields";
-import { create, get, update } from "@/actions/resources";
+import { get } from "@/actions/resources";
 import { FormField } from "@/types/resources";
-//import { useRelationFields } from "@/hooks/resources/use-relation-fields";
-//import { ResourceData } from "@/services";
+import { useRelations } from "@/hooks/resources/use-relation-fields";
 
 interface ResourceFormDialogProps {
   id?: number;
@@ -36,18 +34,16 @@ export default function ResourceFormDialog(props: ResourceFormDialogProps) {
   const { resource: { form, /*relations,*/ resource, rules, renderForm } } = useContext(ResourceContext);
 
   const { data = {} } = useQuery<ReturnType<typeof get>>({
-    //initialData: {},
     gcTime: 0,
     queryKey: ["getResource", resource, id],
     queryFn: () => get(resource, id!),
     enabled: !!id,
   });
 
-  //const { fields, data: updatedData } = useRelationFields(form, data);
+  const { fields, data: updatedData } = useRelations(form, data);
   //const { data: formData } = useRichtextFields(form, data /*updatedData*/);
-  const { submitForm, status } = useSubmitForm(resource, form /*fields*/, !!id ? update : create);
-  console.log(submitForm);
-  
+  const { submitForm, status } = useSubmitForm(resource, fields);  
+
   useEffect(() => {
     if (status === 'success') {
       onOpenChange?.(false);
@@ -65,7 +61,7 @@ export default function ResourceFormDialog(props: ResourceFormDialogProps) {
         <Form
           fields={id ? [idField, ...form] : form}
           validation={rules}
-          data={data}
+          data={updatedData}
           render={renderForm}
           action={submitForm}
         />
