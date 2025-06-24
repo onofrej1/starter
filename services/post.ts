@@ -1,10 +1,10 @@
-import { count, eq, desc, asc } from "drizzle-orm";
+import { count, eq, desc, asc, inArray, and, notInArray } from "drizzle-orm";
 import { db } from "@/db";
-import { posts } from "@/db/schema";
+import { posts, postsToTags } from "@/db/schema";
 import { Pagination, DataService, OrderBy, Search } from "@/services";
 import { filterData } from "@/lib/filter-data";
 
-export const postService: DataService<typeof posts> = {
+export const postService = {
   getAll: async (
     pagination: Pagination,
     search: Search<typeof posts>,
@@ -63,15 +63,44 @@ export const postService: DataService<typeof posts> = {
       },
     }),
 
-  create: (data: typeof posts.$inferInsert) => db.insert(posts).values(data),
+  create: async (data: typeof posts.$inferInsert & { tags: number[] }) => {
+    const newPost = await db
+      .insert(posts)
+      .values(data)
+      .returning({ insertedId: posts.id });
 
-  update: (data: typeof posts.$inferInsert) => {
-    console.log('update data', data);
+    if (data.tags.length > 0) {
+      const values = data.tags.map((tagId) => ({
+        postId: Number(newPost[0].insertedId),
+        tagId,
+      }));
+      await db.insert(postsToTags).values(values).onConflictDoNothing();
+    }
+  },
 
-    return db
-    .update(posts)
-    .set(data)
-    .where(eq(posts.id, Number(data.id)));
-  }
-    
+  update: async (data: typeof posts.$inferInsert & { tags: number[] }) => {
+    console.log("update data", data);
+    await db
+      .update(posts)
+      .set(data)
+      .where(eq(posts.id, Number(data.id)));
+
+    if (data.tags.length > 0) {
+      await db
+        .delete(postsToTags)
+        .where(
+          and(
+            eq(postsToTags.postId, Number(data.id)),
+            notInArray(postsToTags.tagId, data.tags)
+          )
+        );
+
+      const values = data.tags.map((tagId) => ({
+        postId: Number(data.id),
+        tagId,
+      }));
+
+      await db.insert(postsToTags).values(values).onConflictDoNothing();
+    }
+  },
 };

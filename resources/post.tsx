@@ -80,7 +80,7 @@ const post: Resource = {
       renderLabel: (row) => row.title,
     },*/
     {
-      name: "postsToTags",
+      name: "tags",
       type: "manyToMany",
       label: "Tags",
       resource: "tags",
