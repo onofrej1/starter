@@ -1,7 +1,7 @@
 import { pgTable } from "@/db/utils";
 import { relations } from "drizzle-orm";
 import { integer, serial, varchar } from "drizzle-orm/pg-core";
-import { categories, postsToTags } from ".";
+import { categories, Category, postsToTags, Tag } from ".";
 
 export const posts = pgTable("posts", {
   id: serial("id").primaryKey(),
@@ -16,9 +16,11 @@ export const postsRelations = relations(posts, ({ one, many }) => ({
     fields: [posts.categoryId],
     references: [categories.id],
   }),
-  postsToTags: many(postsToTags),
+  tags: many(postsToTags),
 }));
 
 export type PostTable = typeof posts;
 export type Post = typeof posts.$inferSelect;
+export type PostWithCategory = Post & { category: Category }
+export type PostWithTags = Post & { tags: Tag[] }
 export type NewPost = typeof posts.$inferInsert;

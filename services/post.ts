@@ -1,16 +1,17 @@
-import { count, eq, desc, asc, inArray, and, notInArray } from "drizzle-orm";
+import { count, eq, desc, asc } from "drizzle-orm";
 import { db } from "@/db";
-import { posts, postsToTags } from "@/db/schema";
-import { Pagination, DataService, OrderBy, Search } from "@/services";
+import { Post, posts } from "@/db/schema";
+import { Pagination, OrderBy, Search } from "@/services";
 import { filterData } from "@/lib/filter-data";
+import { postToTagsService } from "./postToTags";
 
 export const postService = {
   getAll: async (
     pagination: Pagination,
     search: Search<typeof posts>,
     orderBy: OrderBy[]
-  ) => {
-    const { take, skip } = pagination;
+  ): Promise<[Post[], number]> => {
+    const { limit, offset } = pagination;
     const { filters, operator } = search;
 
     const where = filterData({
@@ -24,20 +25,23 @@ export const postService = {
       .from(posts)
       .where(where);
 
-    const pageCount = Math.ceil(rowCount[0].count / Number(take));
+    const pageCount = Math.ceil(rowCount[0].count / Number(limit));
 
     const orderByQuery = orderBy.map((item) => {
       const key = item.id as keyof typeof posts.$inferInsert;
       return item.desc ? desc(posts[key]) : asc(posts[key]);
     });
 
-    const data = await db
-      .select()
-      .from(posts)
-      .where(where)
-      .limit(take)
-      .offset(skip)
-      .orderBy(...orderByQuery);
+    const data = await db.query.posts.findMany({
+      limit,
+      offset,
+      orderBy: orderByQuery,
+      where,
+      with: {
+        category: true,
+        tags: true,
+      }
+    });
 
     return [data, pageCount];
   },
@@ -55,7 +59,7 @@ export const postService = {
     db.query.posts.findFirst({
       where: eq(posts.id, Number(id)),
       with: {
-        postsToTags: {
+        tags: {
           columns: {
             tagId: true,
           },
@@ -70,37 +74,18 @@ export const postService = {
       .returning({ insertedId: posts.id });
 
     if (data.tags.length > 0) {
-      const values = data.tags.map((tagId) => ({
-        postId: Number(newPost[0].insertedId),
-        tagId,
-      }));
-      await db.insert(postsToTags).values(values).onConflictDoNothing();
+      postToTagsService.create(newPost[0].insertedId, data.tags);
     }
   },
 
   update: async (data: typeof posts.$inferInsert & { tags: number[] }) => {
-    console.log("update data", data);
     await db
       .update(posts)
       .set(data)
       .where(eq(posts.id, Number(data.id)));
 
     if (data.tags.length > 0) {
-      await db
-        .delete(postsToTags)
-        .where(
-          and(
-            eq(postsToTags.postId, Number(data.id)),
-            notInArray(postsToTags.tagId, data.tags)
-          )
-        );
-
-      const values = data.tags.map((tagId) => ({
-        postId: Number(data.id),
-        tagId,
-      }));
-
-      await db.insert(postsToTags).values(values).onConflictDoNothing();
+      postToTagsService.update(data.id!, data.tags);
     }
   },
 };

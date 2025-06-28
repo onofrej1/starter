@@ -6,16 +6,16 @@ import {
 } from "drizzle-orm";
 import { db } from "@/db";
 import { categories } from "@/db/schema";
-import { Pagination, DataService, OrderBy, Search } from "@/services";
+import { Pagination, OrderBy, Search } from "@/services";
 import { filterData } from "@/lib/filter-data";
 
-export const categoryService: DataService<typeof categories> = {
+export const categoryService = {
   getAll: async (
     pagination: Pagination,    
     search: Search<typeof categories>,
     orderBy: OrderBy[],
-  ) => {
-    const { take, skip } = pagination;
+  ): Promise<[typeof categories.$inferSelect[], number]> => {
+    const { limit, offset } = pagination;
     const { filters, operator } = search;
 
     const where = filterData({
@@ -29,42 +29,42 @@ export const categoryService: DataService<typeof categories> = {
       .from(categories)
       .where(where)
 
-    const pageCount = Math.ceil(rowCount[0].count / Number(take));
+    const pageCount = Math.ceil(rowCount[0].count / Number(limit));
 
     const orderByQuery = orderBy.map((item) => {
       const key = item.id as keyof typeof categories.$inferInsert;
       return item.desc ? desc(categories[key]) : asc(categories[key])
     });
 
-    const data = await db
-      .select()
-      .from(categories)
-      .where(where)
-      .limit(take)
-      .offset(skip)
-      .orderBy(...orderByQuery);
+    const data = await db.query.categories.findMany({
+      limit,
+      offset,
+      orderBy: orderByQuery,
+      where,
+    });
 
     return [ data, pageCount ];
   },
 
   getOptions: async () => {
     return db
-    .select({
-      value: categories.id,
-      label: categories.name,
-    })
-    .from(categories)
-  },   
+      .select({
+        value: categories.id,
+        label: categories.name,
+      })
+      .from(categories);
+  },
 
   get: (id: number) =>
     db.query.categories.findFirst({ where: eq(categories.id, Number(id)) }),
 
   create: (data: typeof categories.$inferInsert) =>
-    db.insert(categories).values(data),
+    db.insert(categories).values(data).returning(),
 
   update: (data: typeof categories.$inferInsert) =>
     db
       .update(categories)
       .set(data)
-      .where(eq(categories.id, Number(data.id))),
+      .where(eq(categories.id, Number(data.id)))
+      .returning(),
 };

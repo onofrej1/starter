@@ -2,7 +2,14 @@ import { replaceInFileSync } from "replace-in-file";
 import fs from "fs-extra";
 import path from "path";
 
-const generateApi = (name: string, table: string) => {
+type GenerateApiParams = {
+  name: string;
+  table: string;
+  optionField: string;
+}
+
+const generateApi = (params: GenerateApiParams) => {
+  const { name, table, optionField } = params;
   const templatePath = path.join(__dirname, "generator", "templates");
   const destinationPath = path.join(process.cwd(), "services");
 
@@ -25,15 +32,21 @@ const generateApi = (name: string, table: string) => {
     from: /\[NAME\]/g,
     to: name,
   });
+
+  replaceInFileSync({
+    files: path.join(destinationPath, "**", "*"),
+    from: /\[OPTION_FIELD\]/g,
+    to: optionField,
+  });
 };
 
 //const defaultModels = [{ model: "user", resource: "users", relations: [] }];
 
 const models = [
-  { name: 'category', table: 'categories' },
-  { name: "tag", table: "tags" },
-  { name: "post", table: "posts" },
+  { name: 'category', table: 'categories', optionField: 'name' },
+  { name: "tag", table: "tags", optionField: 'title' },
+  //{ name: "post", table: "posts" },
 ];
 for (const model of [...models /*, ...defaultModels*/]) {
-  generateApi(model.name, model.table);
+  generateApi(model);
 }

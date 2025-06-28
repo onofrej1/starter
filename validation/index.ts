@@ -53,6 +53,7 @@ export const CreateTag = z.object({
 export const CreatePost = z.object({
   id: idValue,
   title: stringValue,
+  content: stringValue,
   //status: stringValue,
   //content: richText,
   //authorId: stringValue,

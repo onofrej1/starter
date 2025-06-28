@@ -1,9 +1,10 @@
 //import { toggleEnableComments, updateStatus } from "@/actions/posts";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
+//import { Badge } from "@/components/ui/badge";
 //import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
-import { Category, Post } from "@/db/schema";
+import { Post } from "@/db/schema";
+import { PostWithCategory } from "@/db/schema/posts";
 //import { posts } from "@/db/schema";
 import { Resource } from "@/types/resources";
 import { CreatePost } from "@/validation";
@@ -158,7 +159,7 @@ const post: Resource = {
       },
       render: ({ row }) => (
         <span className="flex gap-2">
-          {(row.original as Post).id}
+          {(row.original as PostWithCategory).category.name}
 
           {/*(row.original as Post).categories?.map((category: Category) => (
             <Badge key={category.id} variant="outline">

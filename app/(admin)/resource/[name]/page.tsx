@@ -20,7 +20,7 @@ export default function Resource() {
   const [openAddItem, setOpenAddItem] = useState(false);
 
   const {
-    resource: { list, relations = [], resource, advancedFilter },
+    resource: { list, resource, advancedFilter },
   } = useContext(ResourceContext);
 
   const {
@@ -49,11 +49,11 @@ export default function Resource() {
     });
   }
 
-  const skip = (Number(page) || 1) - 1;
-  const take = Number(perPage) || 10;
+  const offset = (Number(page) || 1) - 1;
+  const limit = Number(perPage) || 10;
   const pagination = {
-    take,
-    skip: skip * take,
+    limit,
+    offset: limit * offset,
   };
   const orderBy: OrderBy[] = parseJson(sort, []);
 
@@ -69,19 +69,17 @@ export default function Resource() {
     queryKey: [
       "getAll",
       resource,
-      skip,
-      take,
+      limit,
+      offset,
       operator,
       JSON.stringify(filterQuery),
       JSON.stringify(sort),
     ],    
-
     queryFn: () => getAll(
       resource,
       pagination,      
       search, 
       orderBy,
-      //relations,      
      ),
   });  
   

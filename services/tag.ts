@@ -1,16 +1,21 @@
-import { count, eq, desc, asc } from "drizzle-orm";
+import {
+  count,
+  eq,
+  desc,
+  asc,  
+} from "drizzle-orm";
 import { db } from "@/db";
 import { tags } from "@/db/schema";
-import { Pagination, DataService, OrderBy, Search } from "@/services";
+import { Pagination, OrderBy, Search } from "@/services";
 import { filterData } from "@/lib/filter-data";
 
-export const tagService: DataService<typeof tags> = {
+export const tagService = {
   getAll: async (
-    pagination: Pagination,
+    pagination: Pagination,    
     search: Search<typeof tags>,
-    orderBy: OrderBy[]
-  ) => {
-    const { take, skip } = pagination;
+    orderBy: OrderBy[],
+  ): Promise<[typeof tags.$inferSelect[], number]> => {
+    const { limit, offset } = pagination;
     const { filters, operator } = search;
 
     const where = filterData({
@@ -22,24 +27,23 @@ export const tagService: DataService<typeof tags> = {
     const rowCount = await db
       .select({ count: count() })
       .from(tags)
-      .where(where);
+      .where(where)
 
-    const pageCount = Math.ceil(rowCount[0].count / Number(take));
+    const pageCount = Math.ceil(rowCount[0].count / Number(limit));
 
     const orderByQuery = orderBy.map((item) => {
       const key = item.id as keyof typeof tags.$inferInsert;
-      return item.desc ? desc(tags[key]) : asc(tags[key]);
+      return item.desc ? desc(tags[key]) : asc(tags[key])
     });
 
-    const data = await db
-      .select()
-      .from(tags)
-      .where(where)
-      .limit(take)
-      .offset(skip)
-      .orderBy(...orderByQuery);
+    const data = await db.query.tags.findMany({
+      limit,
+      offset,
+      orderBy: orderByQuery,
+      where,
+    });
 
-    return [data, pageCount];
+    return [ data, pageCount ];
   },
 
   getOptions: async () => {
@@ -54,11 +58,13 @@ export const tagService: DataService<typeof tags> = {
   get: (id: number) =>
     db.query.tags.findFirst({ where: eq(tags.id, Number(id)) }),
 
-  create: (data: typeof tags.$inferInsert) => db.insert(tags).values(data),
+  create: (data: typeof tags.$inferInsert) =>
+    db.insert(tags).values(data).returning(),
 
   update: (data: typeof tags.$inferInsert) =>
     db
       .update(tags)
       .set(data)
-      .where(eq(tags.id, Number(data.id))),
+      .where(eq(tags.id, Number(data.id)))
+      .returning(),
 };

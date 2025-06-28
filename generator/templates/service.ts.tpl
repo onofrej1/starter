@@ -6,16 +6,16 @@ import {
 } from "drizzle-orm";
 import { db } from "@/db";
 import { [TABLE] } from "@/db/schema";
-import { Pagination, DataService, OrderBy, Search } from "@/services";
+import { Pagination, OrderBy, Search } from "@/services";
 import { filterData } from "@/lib/filter-data";
 
-export const [NAME]Service: DataService<typeof [TABLE]> = {
+export const [NAME]Service = {
   getAll: async (
     pagination: Pagination,    
     search: Search<typeof [TABLE]>,
     orderBy: OrderBy[],
-  ) => {
-    const { take, skip } = pagination;
+  ): Promise<[typeof [TABLE].$inferSelect[], number]> => {
+    const { limit, offset } = pagination;
     const { filters, operator } = search;
 
     const where = filterData({
@@ -29,22 +29,30 @@ export const [NAME]Service: DataService<typeof [TABLE]> = {
       .from([TABLE])
       .where(where)
 
-    const pageCount = Math.ceil(rowCount[0].count / Number(take));
+    const pageCount = Math.ceil(rowCount[0].count / Number(limit));
 
     const orderByQuery = orderBy.map((item) => {
       const key = item.id as keyof typeof [TABLE].$inferInsert;
       return item.desc ? desc([TABLE][key]) : asc([TABLE][key])
     });
 
-    const data = await db
-      .select()
-      .from([TABLE])
-      .where(where)
-      .limit(take)
-      .offset(skip)
-      .orderBy(...orderByQuery);
+    const data = await db.query.[TABLE].findMany({
+      limit,
+      offset,
+      orderBy: orderByQuery,
+      where,
+    });
 
     return [ data, pageCount ];
+  },
+
+  getOptions: async () => {
+    return db
+      .select({
+        value: [TABLE].id,
+        label: [TABLE].[OPTION_FIELD],
+      })
+      .from([TABLE]);
   },
 
   get: (id: number) =>

@@ -72,12 +72,11 @@ export function Table(props: TableProps) {
           </DataTableToolbar>
         )}
       </DataTable>
-      <ResourceFormDialog
-        key={rowAction?.variant}
+      {rowAction?.variant === "update" && <ResourceFormDialog
         open={rowAction?.variant === "update"}
         onOpenChange={() => setRowAction(null)}
         id={rowAction?.row.original.id}
-      />
+      />}
     </div>
   );
 }
