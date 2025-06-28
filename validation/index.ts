@@ -60,6 +60,7 @@ export const CreatePost = z.object({
   //content: richText,
   //authorId: stringValue,
   //categories: many2many,
+  userId: z.coerce.string().trim().min(1),
   tags: many2many,
   cover: stringValue,
   categoryId: z.coerce.string().trim().min(1),

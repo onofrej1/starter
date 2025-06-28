@@ -86,6 +86,8 @@ function createPost(categories: number[]): Omit<Post, "id"> {
     content: faker.lorem.words(2),
     cover: faker.lorem.word(),
     categoryId: random(categories) as number,
+    published: new Date().toISOString(),
+    userId: null,
   };
 }
 

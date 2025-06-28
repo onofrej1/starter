@@ -86,12 +86,12 @@ const post: Resource = {
       label: "Tags",
       resource: "tags",
       field: 'tagId',
-      renderLabel: (row) => row.title,
+      renderLabel: (row) => (row as Post).title,
     },
   ],
   list: [
     {
-      name: "authorId",
+      name: "userId",
       header: "Author",
       render: ({ row }) => (
         <div className="flex items-center gap-3">

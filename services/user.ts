@@ -56,7 +56,7 @@ export const userService = {
       .from(user);
   },
 
-  get: (id: string) =>
+  get: (id: number) =>
     db.query.user.findFirst({ where: eq(user.id, id) }),
 
   create: (data: typeof user.$inferInsert) =>
@@ -66,8 +66,8 @@ export const userService = {
     db
       .update(user)
       .set(data)
-      .where(eq(user.id, data.id))
+      .where(eq(user.id, Number(data.id)))
       .returning(),
 
-  remove: (idList: string[]) => db.delete(user).where(inArray(user.id, idList)),
+  remove: (idList: number[]) => db.delete(user).where(inArray(user.id, idList)),
 };

@@ -4,7 +4,7 @@ import { Rules } from "@/validation";
 import { JSX } from "react";
 import { Option } from "@/components/multiple-selector";
 import { CellContext } from "@tanstack/react-table";
-import { Category, Post, Tag } from "@/db/schema";
+import { Category, Post, Tag, User } from "@/db/schema";
 import { QueryClient } from "@tanstack/react-query";
 import { Resource as ResourceName } from "@/lib/resources";
 
@@ -30,7 +30,8 @@ export interface MultiSelectOption {
 export type TableData = 
 | Category
 | Post
-| Tag;
+| Tag
+| User;
 
 export interface TableHeader {
   name: string;
