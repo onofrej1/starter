@@ -95,7 +95,7 @@ export interface MultipleSelectorType extends BaseFormType {
   options?: Option[];
   resource: ResourceName;
   field: string;
-  renderLabel: (data: Record<string, any>) => string | JSX.Element;
+  renderLabel: (data: Record<string, unknown>) => string | JSX.Element;
 }
 
 export interface DatePickerType extends BaseFormType {

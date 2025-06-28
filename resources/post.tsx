@@ -65,14 +65,14 @@ const post: Resource = {
       resource: "categories",
       renderLabel: (row) => `${row.name}`,
     },
-    /*{
-      name: "authorId",
+    {
+      name: "userId",
       type: "foreignKey",
-      relation: "author",
-      label: "Author",
+      relation: "user",
+      label: "User",
       resource: "users",
-      renderLabel: (row) => `${row.lastName} ${row.firstName}`,
-    },*/
+      renderLabel: (row) => `${row.name}`,
+    },
     /*{
       name: "categories",
       type: "manyToMany",

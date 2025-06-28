@@ -29,8 +29,8 @@ const emailValue = z.string().email();
 const idValue = z.number().optional();
 
 export const RegisterUser = z.object({
-  firstName: stringValue,
-  lastName: stringValue,
+  //firstName: stringValue,
+  name: stringValue,
   email: emailValue,
   password: stringValue,
 });

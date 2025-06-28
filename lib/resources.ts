@@ -1,5 +1,5 @@
 //import { FormField, TableData } from "@/types/resources";
-import { categories, posts, tags } from "@/db/schema";
+import { categories, posts, tags, user } from "@/db/schema";
 import { FilterVariant } from "@/types/data-table";
 import { AnyColumn, eq, ilike, ne, Table } from "drizzle-orm";
 
@@ -7,6 +7,7 @@ export const resources = {
   categories: categories,
   tags: tags,
   posts: posts,
+  users: user,
 };
 
 /*export enum Resource {

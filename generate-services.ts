@@ -45,6 +45,7 @@ const generateService = (params: GenerateApiParams) => {
 const models = [
   { name: 'category', table: 'categories', optionField: 'name' },
   { name: "tag", table: "tags", optionField: 'title' },
+  { name: "user", table: "user", optionField: 'name' },
   //{ name: "post", table: "posts" },
 ];
 for (const model of [...models /*, ...defaultModels*/]) {

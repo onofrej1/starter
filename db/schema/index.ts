@@ -2,7 +2,7 @@ import { categories, type Category, type NewCategory } from "./categories";
 import { tags, tagsRelations, type Tag, type NewTag } from "./tags";
 import { posts, postsRelations, type Post, type NewPost } from "./posts";
 import { postsToTags, postsToTagsRelations } from "./posts-to-tags";
-
+import { user, session, account, verification } from "./auth-schema";
 export {
   categories,
   tags,
@@ -16,5 +16,10 @@ export {
   type Tag,
   type NewTag,
   type Post,
-  type NewPost
+  type NewPost,
+  // better-auth models
+  user,
+  session,
+  account,
+  verification,
 };
