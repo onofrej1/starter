@@ -2,7 +2,8 @@ import {
   count,
   eq,
   desc,
-  asc,  
+  asc,
+  inArray,
 } from "drizzle-orm";
 import { db } from "@/db";
 import { tags } from "@/db/schema";
@@ -67,4 +68,6 @@ export const tagService = {
       .set(data)
       .where(eq(tags.id, Number(data.id)))
       .returning(),
+
+  remove: (idList: number[]) => db.delete(tags).where(inArray(tags.id, idList)),
 };

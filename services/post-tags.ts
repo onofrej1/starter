@@ -2,7 +2,7 @@ import { db } from "@/db";
 import { postsToTags } from "@/db/schema";
 import { and, eq, notInArray } from "drizzle-orm";
 
-export const postToTagsService = {
+export const postTagsService = {
   create: async (postId: number, tags: number[]) => {
     if (tags.length > 0) {
       const values = tags.map((tagId) => ({

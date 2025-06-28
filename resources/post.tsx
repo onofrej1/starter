@@ -136,7 +136,7 @@ const post: Resource = {
             console.log(row);
             //await toggleEnableComments(row.id, !row.enableComments);
             queryClient.invalidateQueries({
-              queryKey: ["getResourceData", "posts"],
+              queryKey: ["getAll", "posts"],
             });
           }}
         />

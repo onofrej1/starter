@@ -27,12 +27,10 @@ export type ResourceData = NewTag &
   NewCategory &
   (NewPost & { tags: number[] });
 
-export function getDataService(
-  resource: Resource
-) {
+export function getDataService(resource: Resource) {
   return {
-    'categories': categoryService,
-    'tags': tagService,
-    'posts': postService,
+    categories: categoryService,
+    tags: tagService,
+    posts: postService,
   }[resource];
 }

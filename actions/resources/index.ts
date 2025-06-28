@@ -40,3 +40,7 @@ export async function update(
 ) {
   await getDataService(resource).update(data);
 }
+
+export async function remove(resource: Resource, idList: number[]) {
+  await getDataService(resource).remove(idList);
+}

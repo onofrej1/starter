@@ -8,7 +8,7 @@ type GenerateApiParams = {
   optionField: string;
 }
 
-const generateApi = (params: GenerateApiParams) => {
+const generateService = (params: GenerateApiParams) => {
   const { name, table, optionField } = params;
   const templatePath = path.join(__dirname, "generator", "templates");
   const destinationPath = path.join(process.cwd(), "services");
@@ -48,5 +48,5 @@ const models = [
   //{ name: "post", table: "posts" },
 ];
 for (const model of [...models /*, ...defaultModels*/]) {
-  generateApi(model);
+  generateService(model);
 }

@@ -26,7 +26,7 @@ export default function Resource() {
   const {
     page,
     perPage,
-    sort = "",
+    sort,
     joinOperator: operator = 'and',
     filters,
   } = Object.fromEntries(searchParams.entries());
@@ -111,7 +111,7 @@ export default function Resource() {
           key="addResource"
           open={openAddItem}
           onOpenChange={() => setOpenAddItem(false)}
-        />
+        />      
       </div>
     </div>
   );

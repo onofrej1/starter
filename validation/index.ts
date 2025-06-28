@@ -43,11 +43,13 @@ export const LoginUser = z.object({
 export const CreateCategory = z.object({
   id: idValue,
   name: stringValue,
+  description: stringValue,
 });
 
 export const CreateTag = z.object({
   id: idValue,
   title: stringValue,
+  description: stringValue,
 });
 
 export const CreatePost = z.object({

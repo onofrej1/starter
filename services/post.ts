@@ -1,9 +1,9 @@
-import { count, eq, desc, asc } from "drizzle-orm";
+import { count, eq, desc, asc, inArray } from "drizzle-orm";
 import { db } from "@/db";
 import { Post, posts } from "@/db/schema";
 import { Pagination, OrderBy, Search } from "@/services";
 import { filterData } from "@/lib/filter-data";
-import { postToTagsService } from "./postToTags";
+import { postTagsService } from "./post-tags";
 
 export const postService = {
   getAll: async (
@@ -40,7 +40,7 @@ export const postService = {
       with: {
         category: true,
         tags: true,
-      }
+      },
     });
 
     return [data, pageCount];
@@ -74,7 +74,7 @@ export const postService = {
       .returning({ insertedId: posts.id });
 
     if (data.tags.length > 0) {
-      postToTagsService.create(newPost[0].insertedId, data.tags);
+      postTagsService.create(newPost[0].insertedId, data.tags);
     }
   },
 
@@ -85,7 +85,10 @@ export const postService = {
       .where(eq(posts.id, Number(data.id)));
 
     if (data.tags.length > 0) {
-      postToTagsService.update(data.id!, data.tags);
+      postTagsService.update(data.id!, data.tags);
     }
   },
+
+  remove: (idList: number[]) =>
+    db.delete(posts).where(inArray(posts.id, idList)),
 };

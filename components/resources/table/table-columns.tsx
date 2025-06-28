@@ -7,16 +7,7 @@ import { DataTableColumnHeader } from "@/components/data-table/data-table-column
 import { resources } from "@/resources";
 import { TableData } from "@/types/resources";
 import { Checkbox } from "@/components/ui/checkbox";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuShortcut,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
-import { Ellipsis } from "lucide-react";
+import { Edit, Trash } from "lucide-react";
 import { DataTableRowAction } from "@/types/data-table";
 import { QueryClient } from "@tanstack/react-query";
 
@@ -67,6 +58,24 @@ export async function getColumns({
     id: "actions",
     cell: function Cell(props) {
       const { row } = props;
+
+      return (
+        <div className="flex items-center gap-1">
+          <Edit
+            className="cursor-pointer"
+            size={16}
+            onClick={() => setRowAction({ row, variant: "update" })}
+          />
+          <Trash
+            className="cursor-pointer"
+            size={16}
+            onClick={() => setRowAction({ row, variant: "delete" })}
+          />
+        </div>
+      );
+    },
+    /*cell: function Cell(props) {
+      const { row } = props;
       const customActions = resource.list.find(
         (field) => field.name === "actions"
       );
@@ -114,31 +123,34 @@ export async function getColumns({
           </DropdownMenuContent>
         </DropdownMenu>
       );
-    },
+    },*/
     size: 40,
   };
 
-  const columns = await Promise.all(resource.list
-    .filter((field) => field.name !== "actions")
-    .map( async (field) => {
-      const column = {
-        id: field.name,
-        accessorKey: field.name,
-        header: ({ column }) => (
-          <DataTableColumnHeader column={column} title={field.header} />
-        ),
-        enableSorting: field.enableSort === undefined ? true : field.enableSort,
-        enableHiding: field.enableHide === undefined ? true : field.enableHide,
-        enableColumnFilter: true,
-      } as ColumnDef<TableData>;
+  const columns = await Promise.all(
+    resource.list
+      .filter((field) => field.name !== "actions")
+      .map(async (field) => {
+        const column = {
+          id: field.name,
+          accessorKey: field.name,
+          header: ({ column }) => (
+            <DataTableColumnHeader column={column} title={field.header} />
+          ),
+          enableSorting:
+            field.enableSort === undefined ? true : field.enableSort,
+          enableHiding:
+            field.enableHide === undefined ? true : field.enableHide,
+          enableColumnFilter: true,
+        } as ColumnDef<TableData>;
 
-      if (field.filter) {
-        const filter = field.filter;
-        const meta: ColumnMeta<TableData, unknown> = filter;
-        meta.variant = filter.type;
+        if (field.filter) {
+          const filter = field.filter;
+          const meta: ColumnMeta<TableData, unknown> = filter;
+          meta.variant = filter.type;
 
-        if (filter.type === "multiSelect") {
-          /*const optionsData = await queryClient.fetchQuery({
+          if (filter.type === "multiSelect") {
+            /*const optionsData = await queryClient.fetchQuery({
             queryKey: ["getOptions", filter.resource],
             queryFn: () => getResource() /*getOptions(filter.resource!),
           });
@@ -147,17 +159,18 @@ export async function getColumns({
             value: o.id,
           }));
           filter.options = options;*/
+          }
+          column.meta = meta;
         }
-        column.meta = meta;
-      }
-      
-      if (field.render) {
-        column.cell = (props) => {
-          return field.render!(props, queryClient);
-        };
-      }
-      return column;
-    }));
+
+        if (field.render) {
+          column.cell = (props) => {
+            return field.render!(props, queryClient);
+          };
+        }
+        return column;
+      })
+  );
 
   return [selectRowColumn, ...columns, actionColumn];
 }

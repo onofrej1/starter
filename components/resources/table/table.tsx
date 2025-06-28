@@ -14,6 +14,8 @@ import { DataTableSortList } from "@/components/data-table/data-table-sort-list"
 import { useDataTable } from "@/hooks/use-data-table";
 import { ColumnDef } from "@tanstack/react-table";
 import { DataTableToolbar } from "@/components/data-table/toolbar/data-table-toolbar";
+import { DeleteRowDialog } from "../delete-row-dialog";
+import { TableActionBar } from "./table-action-bar";
 
 interface TableProps {
   dataPromise: Promise<[data: TableData[], pageCount: number]>;
@@ -48,19 +50,19 @@ export function Table(props: TableProps) {
     pageCount,
     enableAdvancedFilter: advancedFilter,
     initialState: {
-      sorting: [{ id: "id", desc: true }],
+      //sorting: [{ id: "id", desc: true }],
       columnPinning: { right: ["actions"] },
     },
     getRowId: (originalRow) => originalRow.id.toString(),
     shallow: false,
     clearOnDefault: true,
   });
-  
+
   if (!initialized) return null;
-  
+
   return (
     <div className="mt-2">
-      <DataTable table={table}>
+      <DataTable table={table} actionBar={<TableActionBar table={table} />}>
         {advancedFilter ? (
           <DataTableAdvancedToolbar table={table}>
             <DataTableFilterList table={table} />
@@ -72,11 +74,28 @@ export function Table(props: TableProps) {
           </DataTableToolbar>
         )}
       </DataTable>
-      {rowAction?.variant === "update" && <ResourceFormDialog
-        open={rowAction?.variant === "update"}
-        onOpenChange={() => setRowAction(null)}
-        id={rowAction?.row.original.id}
-      />}
+
+      {rowAction?.variant === "update" && (
+        <ResourceFormDialog
+          open={rowAction?.variant === "update"}
+          onOpenChange={() => setRowAction(null)}
+          id={rowAction?.row.original.id}
+        />
+      )}
+
+      {rowAction?.variant === "delete" && (
+        <DeleteRowDialog
+          open={rowAction?.variant === "delete"}
+          onOpenChange={() => setRowAction(null)}
+          row={rowAction?.row.original}
+          onSuccess={() => {
+            rowAction?.row.toggleSelected(false);
+            queryClient.invalidateQueries({
+              queryKey: ["getAll", resource],
+            });
+          }}
+        />
+      )}
     </div>
   );
 }
