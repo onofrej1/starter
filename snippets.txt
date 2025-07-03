@@ -12,3 +12,62 @@
 }*/
 
 export type GetAllReturnType<T extends Table> = [InferSelectModel<T>[], number];
+
+/*export async function create(resource: Resource, data: Record<string, unknown>) {
+  const service = await getDataService(resource);
+  type P = Parameters<typeof service['save']>;
+  if (isDataOfType('categories', data)) {
+    service.save(data as P);
+  }
+}*/
+
+//type Par = unknown; // NewCategory | NewTag | NewPost | NewUser;
+//Parameters<typeof categoryService.update>;
+/*| Parameters<typeof tagService.update>
+  | Parameters<typeof userService.update>
+  | Parameters<typeof postService.update>;*/
+
+//export async function update(resource: Resource, data: Par) {
+//  const service = await getDataService(resource);
+//  const method = categoryService.update;
+//if (isDataOfType1(categoryService.update, data)) {
+//categoryService.update(data as NewCategory);
+//}
+//categoryService.update(data);
+//  service.update(data);
+//}
+
+type AllowedMethods = any;
+type IDataService<TService> = Record<Exclude<keyof TService, 'PATH'>, AllowedMethods>
+
+type FunctionPropertyNames<T> = {
+  [K in keyof T]: T[K] extends Function ? K : never
+}[keyof T]
+export type FunctionProperties<T> = Pick<T, FunctionPropertyNames<T>>
+
+const gDataService = <
+    TService extends IDataService<TService>,
+    TMethod extends FunctionPropertyNames<TService>
+>
+    (service: TService, methodName: TMethod) => {
+
+    const method: FunctionProperties<TService>[TMethod] = service[methodName];
+
+    const run = async (...params: Parameters<typeof method>) => {
+        await method.apply(service, params);
+    };
+
+    return { run };
+};
+
+const services1 = {
+  categories: gDataService(categoryService, 'update'),
+  tags: gDataService(tagService, 'update'),
+  posts: gDataService(postService, 'update'),
+};
+
+const runMethod = (entity: 'categories' | 'posts' | 'tags') => {
+  //services1[entity].run({ name: 'eee' });
+}
+
+

@@ -1,13 +1,13 @@
 import { Table } from "drizzle-orm";
-import { categoryService } from "@/services/category";
 import { Filter, Resource } from "@/lib/resources";
-import { postService } from "./post";
-import { tagService } from "./tag";
 import { NewTag } from "@/db/schema";
 import { NewCategory } from "@/db/schema";
 import { NewPost } from "@/db/schema";
-import { userService } from "./user";
 import { NewUser } from "@/db/schema";
+import { categoryService } from "./category-service";
+import { tagService } from "./tag-service";
+import { postService } from "./post-service";
+import { userService } from "./user-service";
 
 export type Pagination = {
   limit: number;
@@ -28,12 +28,27 @@ export type ResourceData = NewTag &
   NewCategory &
   (NewPost & { tags: number[] }) &
   NewUser;
+export type ResourceFormData = NewTag | NewCategory | NewUser | NewPost;
+
+type Service =
+  | typeof categoryService
+  | typeof tagService
+  | typeof postService
+  | typeof userService;
+
+const services = new Map<Resource, Service>([
+  ["categories", categoryService],
+  ["tags", tagService],
+  ["posts", postService],
+  ["users", userService],
+]);
 
 export function getDataService(resource: Resource) {
-  return {
-    categories: categoryService,
-    tags: tagService,
-    posts: postService,
-    users: userService,
-  }[resource];
+  if (services.has(resource)) {
+    return services.get(resource)!;
+  }
+  throw new Error('Service not found');
 }
+
+
+

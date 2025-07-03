@@ -5,9 +5,14 @@ import {
   getDataService,
   OrderBy,
   Pagination,
-  ResourceData,
+  ResourceFormData,
   Search,
 } from "@/services";
+import { isDataOfType } from "./guards";
+import { categoryService } from "@/services/category-service";
+import { tagService } from "@/services/tag-service";
+import { postService } from "@/services/post-service";
+import { userService } from "@/services/user-service";
 
 export async function getAll(
   resource: Resource,
@@ -24,23 +29,24 @@ export async function get(resource: Resource, id: number) {
 
 export async function getOptions(resource: Resource) {
   const options = await getDataService(resource).getOptions();
-  return options.map(option => ({ ...option, value: option.value.toString() }));
-}
-
-export async function create(
-  resource: Resource,
-  data: ResourceData
-) {
-  await getDataService(resource).create(data);
-}
-
-export async function update(
-  resource: Resource,
-  data: ResourceData
-) {
-  await getDataService(resource).update(data);
+  return options.map((option) => ({
+    ...option,
+    value: option.value.toString(),
+  }));
 }
 
 export async function remove(resource: Resource, idList: number[]) {
   await getDataService(resource).remove(idList);
+}
+
+export async function save(resource: Resource, data: ResourceFormData) {
+  if (resource === "categories" && isDataOfType("categories", data)) {
+    categoryService.save(data);
+  } else if (resource === "tags" && isDataOfType("tags", data)) {
+    tagService.save(data);
+  } else if (resource === "posts" && isDataOfType("posts", data)) {
+    postService.save(data);
+  } else if (resource === "users" && isDataOfType("users", data)) {
+    userService.save(data);
+  }
 }
