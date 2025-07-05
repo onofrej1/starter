@@ -1,15 +1,16 @@
-import { categories, posts, tags, user } from "@/db/schema";
-import { db } from "@/db";
-import { eq, inArray, InferInsertModel } from "drizzle-orm";
+/*import { eq, inArray, InferInsertModel } from "drizzle-orm";
 import { PgColumn } from "drizzle-orm/pg-core";
 import { count, desc, asc } from "drizzle-orm";
 import { Pagination, OrderBy, Search } from "@/services";
 import { filterData } from "@/lib/filter-data";
+import { Category, Post, Tag } from "@/generated/prisma";
+import { prisma } from "@/db/prisma";
 
-type Tables = typeof categories | typeof tags | typeof posts | typeof user;
+//type Tables = typeof categories | typeof tags | typeof posts | typeof user;
+type Table = typeof prisma.tag | typeof prisma.post; // | Tag | Category;
 
-export class BaseService<Schema extends Tables, PkColumn extends PgColumn> {
-  protected schema: Tables;
+export class BaseService<Schema extends Table, PkColumn extends PgColumn> {
+  protected schema: Table;
   protected primaryKeyColumn: PkColumn;
 
   constructor(schema: Schema, primaryKeyColumn: PkColumn) {
@@ -21,11 +22,11 @@ export class BaseService<Schema extends Tables, PkColumn extends PgColumn> {
     pagination: Pagination,
     search: Search<typeof this.schema>,
     orderBy: OrderBy[]
-  ): Promise<[(typeof this.schema.$inferSelect)[], number]> {
+  ) {
     const { limit, offset } = pagination;
     const { filters, operator } = search;
 
-    const where = filterData({
+    /*const where = filterData({
       table: this.schema,
       filters: filters,
       joinOperator: operator,
@@ -41,26 +42,29 @@ export class BaseService<Schema extends Tables, PkColumn extends PgColumn> {
     const orderByQuery = orderBy.map((item) => {
       const key = item.id as keyof typeof this.schema.$inferInsert;
       return item.desc ? desc(this.schema[key]) : asc(this.schema[key]);
-    });
+    });*/
 
-    const data = await db
+    /*const data = await db
       .select()
       .from(this.schema)
       .limit(limit)
       .offset(offset)
       .orderBy(...orderByQuery)
-      .where(where);
+      .where(where);*/
     /*const data = await db.query.this.findMany({
       limit,
       offset,
       orderBy: orderByQuery,
       where,
     });*/
+    /*const data = this.schema.update({ data: {
 
-    return [data, pageCount];
-  }
+    }, where: { id: 1 }})
 
-  async getOptions() {
+    return [data, 0];*/
+  
+
+  /*async getOptions() {
     return db
       .select({
         value: this.primaryKeyColumn,
@@ -83,15 +87,6 @@ export class BaseService<Schema extends Tables, PkColumn extends PgColumn> {
     await db.delete(this.schema).where(inArray(this.primaryKeyColumn, idList));
   }
 
-  /*async delete(value: string, column?: PgColumn) {
-    const results = await db
-      .delete(this.schema)
-      .where(eq(column ?? this.primaryKeyColumn, value))
-      .returning();
-
-    return results?.[0];
-  }*/
-
   async save(payload: InferInsertModel<Schema>, conflictTarget?: PgColumn) {
     const results = await db
       .insert(this.schema)
@@ -103,5 +98,5 @@ export class BaseService<Schema extends Tables, PkColumn extends PgColumn> {
       .returning();
 
     return results?.[0];
-  }
-}
+  }*/
+

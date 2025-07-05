@@ -1,4 +1,4 @@
-import { Tag } from "@/db/schema";
+import { Tag } from "@/generated/prisma";
 import { Resource } from "@/types/resources";
 import { CreateTag } from "@/validation";
 

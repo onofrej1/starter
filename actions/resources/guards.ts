@@ -1,11 +1,13 @@
-import { NewCategory, NewPost, NewTag, NewUser } from "@/db/schema";
+//import { NewCategory, NewPost, NewTag, NewUser } from "@/db/schema";
 //import { Resource } from "@/lib/resources";
 
+import { Category, Post, Tag } from "@/generated/prisma";
+
 interface DataMap {
-  categories: NewCategory;
-  posts: NewPost;
-  users: NewUser;
-  tags: NewTag;
+  categories: Category;
+  posts: Post;
+  //users: NewUser;
+  tags: Tag;
 }
 
 const resourceData = {

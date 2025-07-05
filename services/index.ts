@@ -1,13 +1,9 @@
 import { Table } from "drizzle-orm";
 import { Filter, Resource } from "@/lib/resources";
-import { NewTag } from "@/db/schema";
-import { NewCategory } from "@/db/schema";
-import { NewPost } from "@/db/schema";
-import { NewUser } from "@/db/schema";
 import { categoryService } from "./category-service";
-import { tagService } from "./tag-service";
 import { postService } from "./post-service";
-import { userService } from "./user-service";
+import { tagService } from "./tag-service";
+import { Category, Post, Tag } from "@/generated/prisma";
 
 export type Pagination = {
   limit: number;
@@ -24,23 +20,33 @@ export type Search<T = Table> = {
   operator: "and" | "or";
 };
 
-export type ResourceData = NewTag &
-  NewCategory &
-  (NewPost & { tags: number[] }) &
-  NewUser;
-export type ResourceFormData = NewTag | NewCategory | NewUser | NewPost;
+
+export type SearchParam = {
+  filters: Filter[];
+  operator: "and" | "or";
+};
+
+export type ResourceFormData = Record<string, unknown>;
+
+type Resources = 
+| Tag
+| Post
+| Category;
+
+export type UpsertData = UnionToIntersection<Resources>; 
+
+export type UnionToIntersection<U> = 
+  (U extends unknown ? (x: U)=>void : never) extends ((x: infer I)=>void) ? I : never;
 
 type Service =
   | typeof categoryService
   | typeof tagService
-  | typeof postService
-  | typeof userService;
+  | typeof postService;
 
 const services = new Map<Resource, Service>([
   ["categories", categoryService],
   ["tags", tagService],
   ["posts", postService],
-  ["users", userService],
 ]);
 
 export function getDataService(resource: Resource) {

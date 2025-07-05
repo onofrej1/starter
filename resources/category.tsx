@@ -1,4 +1,5 @@
-import { Category } from "@/db/schema";
+//import { Category } from "@/db/schema";
+import { Category } from "@/generated/prisma";
 import { Resource } from "@/types/resources";
 import { CreateCategory } from "@/validation";
 
@@ -17,7 +18,7 @@ const category: Resource = {
   list: [
     { name: "id", header: "Id" },
     {
-      name: "name",
+      name: "title",
       header: "Name",
       filter: {
         label: "Name",

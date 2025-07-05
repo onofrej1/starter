@@ -1,13 +1,15 @@
 //import { FormField, TableData } from "@/types/resources";
-import { categories, posts, tags, user } from "@/db/schema";
+//import { categories, posts, tags, user } from "@/db/schema";
+import { prisma } from "@/db/prisma";
 import { FilterVariant } from "@/types/data-table";
+import { FormField } from "@/types/resources";
 import { AnyColumn, eq, ilike, ne, Table } from "drizzle-orm";
 
 export const resources = {
-  categories: categories,
-  tags: tags,
-  posts: posts,
-  users: user,
+  categories: prisma.category,
+  tags: prisma.tag,
+  posts: prisma.post,
+  //users: user,
 };
 
 /*export enum Resource {
@@ -16,7 +18,7 @@ export const resources = {
   Posts = 'posts'
 }*/
 
-export type Resource = keyof typeof resources;
+export type Resource = keyof typeof resources | 'users';
 
 export function getOrderBy(input: string) {
   if (!input) {
@@ -30,21 +32,21 @@ export function getOrderBy(input: string) {
 export type FilterOld = {
   id: string;
   value: string | string[];
-  operator: string;  
+  operator: string;
   variant: FilterVariant;
   search: string;
-}
+};
 
 export type Filter<T = Table> = {
   value: string | string[];
-  operator: string;  
+  operator: string;
   variant: FilterVariant;
   search: string;
   id: Extract<keyof T, string>;
-}
+};
 
 export function searchResource(resource: Table, filters: Filter[]) {
-  //const filters: Filter[] /*Filter<TableData>[]*/ = JSON.parse(input);  
+  //const filters: Filter[] /*Filter<TableData>[]*/ = JSON.parse(input);
   const query: any[] = []; // eslint-disable-line
 
   const oper: Record<string, typeof eq | typeof ne | typeof ilike> = {
@@ -61,24 +63,23 @@ export function searchResource(resource: Table, filters: Filter[]) {
 
     if (["text"].includes(filter.variant)) {
       if (value) {
-        value = operator === 'ilike' ? '%'+value+'%' : value;
+        value = operator === "ilike" ? "%" + value + "%" : value;
         // @ts-expect-error eee
         where = oper[operator](resource[key] as AnyColumn, value);
         query.push(where);
-
       }
     }
 
     if (["multiSelect"].includes(filter.variant)) {
       if (value) {
-        value = operator === 'ilike' ? '%'+value+'%' : value;
+        value = operator === "ilike" ? "%" + value + "%" : value;
         // @ts-expect-error eee
         where = oper[operator](resource[filter.id], value);
         query.push(where);
       }
     }
   });
-  console.log('query', query);
+  console.log("query", query);
   return query;
 }
 
@@ -99,13 +100,35 @@ export function reduceQuery(query: string[]) {
   }, {} as Record<string, boolean>);
 }
 
-/*export function setRelations(
-  data: Record<string, any>,
+export function getWhere(where: Record<string, any>) {
+  return Object.keys(where).reduce((acc, k) => {
+    const value = where[k];
+    if (value !== "") {
+      const [op, val] = value.split(",");
+      acc[k] = { [op]: val };
+    }
+    return acc;
+  }, {} as Record<string, unknown>);
+}
+
+export function getInclude(includeModels: string) {
+  if (!includeModels) {
+    return {};
+  }
+  return includeModels.split(",").reduce((acc, model) => {
+    acc[model] = true;
+    return acc;
+  }, {} as Record<string, true>);
+}
+
+export function setRelations(
+  //data: Record<string, Record<string, string | boolean | { id: any } | string[]>>,
+  data: any,
   fields: FormField[],
-  entity?: Record<string, any>
+  isUpdate: boolean = false
 ) {
   for (const field of fields) {
-    if (field.variant === "foreignKey") {
+    if (field.type === "foreignKey") {
       if (data[field.name]) {
         data[field.relation!] = { connect: { id: data[field.name] } };
       } else {
@@ -114,16 +137,19 @@ export function reduceQuery(query: string[]) {
       delete data[field.name!];
     }
 
-    if (field.variant === "manyToMany") {
+    if (field.type === "manyToMany") {
       const values = data[field.name]
         .filter(Boolean)
         .map((value: number) => ({ id: value }));
-
       if (values && values.length > 0) {
-        data[field.name] = getConnectValues(entity?.[field.name], values);
+        data[field.name] = { connect: values };
       } else {
-        entity?.id ? (data[field.name] = { set: [] }) : delete data[field.name];
+        if (isUpdate) {
+          data[field.name] = { set: [] };
+        } else {
+          delete data[field.name];
+        }
       }
     }
   }
-}*/
+}

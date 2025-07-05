@@ -3,8 +3,9 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 //import { Badge } from "@/components/ui/badge";
 //import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
-import { Post } from "@/db/schema";
-import { PostWithCategory } from "@/db/schema/posts";
+import { Post } from "@/generated/prisma";
+//import { Post } from "@/db/schema";
+//import { PostWithCategory } from "@/db/schema/posts";
 //import { posts } from "@/db/schema";
 import { Resource } from "@/types/resources";
 import { CreatePost } from "@/validation";
@@ -104,8 +105,7 @@ const post: Resource = {
               height={10}
             />
             <AvatarFallback>
-              {(row.original as Post).title}
-              {/*row.author.firstName?.[0].toUpperCase()*/}
+              
               {/*row.author.lastName?.[0].toUpperCase()*/}
             </AvatarFallback>
           </Avatar>
@@ -159,7 +159,7 @@ const post: Resource = {
       },
       render: ({ row }) => (
         <span className="flex gap-2">
-          {(row.original as PostWithCategory).category.name}
+          {(row.original as any).category.name}
 
           {/*(row.original as Post).categories?.map((category: Category) => (
             <Badge key={category.id} variant="outline">

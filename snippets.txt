@@ -71,3 +71,10 @@ const runMethod = (entity: 'categories' | 'posts' | 'tags') => {
 }
 
 
+if (resource === "categories" && isDataOfType("categories", data)) {
+    categoryService.upsert(data);
+  } else if (resource === "tags" && isDataOfType("tags", data)) {
+    tagService.upsert(data);
+  } else if (resource === "posts" && isDataOfType("posts", data)) {
+    postService.upsert(data);
+  }

@@ -4,9 +4,10 @@ import { Rules } from "@/validation";
 import { JSX } from "react";
 import { Option } from "@/components/multiple-selector";
 import { CellContext } from "@tanstack/react-table";
-import { Category, Post, Tag, User } from "@/db/schema";
+
 import { QueryClient } from "@tanstack/react-query";
 import { Resource as ResourceName } from "@/lib/resources";
+import { Category, Tag, Post } from "@/generated/prisma";
 
 interface BaseFormType {
   name: string;
@@ -30,8 +31,7 @@ export interface MultiSelectOption {
 export type TableData = 
 | Category
 | Post
-| Tag
-| User;
+| Tag;
 
 export interface TableHeader {
   name: string;

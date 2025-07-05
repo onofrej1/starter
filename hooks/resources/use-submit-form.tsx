@@ -4,11 +4,9 @@ import { useState } from "react";
 import { deleteFile, uploadFiles } from "@/actions/files";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Resource } from "@/lib/resources";
-import { ResourceData } from "@/services";
+import { UpsertData } from "@/services";
 import { DefaultFormData } from "@/components/form/form";
-import { create, update } from "@/actions/resources";
-
-type MutationFunction = typeof create | typeof update;
+import { upsert } from "@/actions/resources";
 
 export function useSubmitForm(
   resource: Resource,
@@ -19,7 +17,7 @@ export function useSubmitForm(
 
   const [status, setStatus] = useState<Status>("idle");
   const [responseData, setResponseData] =
-    useState<Awaited<ReturnType<MutationFunction>>>();
+    useState<Awaited<ReturnType<typeof upsert>>>();
 
   const { mutate } = useMutation({
     mutationFn: ({
@@ -29,8 +27,7 @@ export function useSubmitForm(
       resource: Resource;
       data: Record<string, unknown>;
     }) => {
-      const fn = data.id ? update : create;
-      return fn(resource, data as ResourceData);
+      return upsert(resource, data as UpsertData);
     },
     onSuccess: (data) => {
       setStatus("success");
