@@ -1,14 +1,8 @@
-//import { db } from "@/db";
 import { prisma } from "@/db/prisma";
 import { betterAuth } from "better-auth";
-//import { Pool } from "pg";
-//import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 
 export const auth = betterAuth({
-  /*database: drizzleAdapter(db, {
-    provider: "pg",
-  }),*/
   database: prismaAdapter(prisma, {
     provider: "postgresql",
 }),
@@ -32,11 +26,4 @@ export const auth = betterAuth({
       clientSecret: process.env.GITHUB_SECRET as string,
     },
   },
-  /*database: new Pool({
-    host: process.env.DB_HOST,
-    port: parseInt(process.env.DB_PORT as string),
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME,
-  }),*/
 });

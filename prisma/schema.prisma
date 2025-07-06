@@ -1,4 +1,3 @@
-
 generator client {
   provider = "prisma-client-js"
   output   = "../generated/prisma"
@@ -20,6 +19,7 @@ model Post {
   updatedAt       DateTime   @updatedAt
   enableComments  Boolean    @default(true)
   status          PostStatus @default(DRAFT)
+  likes           Int?        @default(0)
   publishedAt     DateTime?
   metaTitle       String?
   metaDescription String?

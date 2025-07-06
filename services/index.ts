@@ -1,4 +1,3 @@
-import { Table } from "drizzle-orm";
 import { Filter, Resource } from "@/lib/resources";
 import { categoryService } from "./category-service";
 import { postService } from "./post-service";
@@ -15,8 +14,8 @@ export type OrderBy = {
   desc: boolean;
 };
 
-export type Search<T = Table> = {
-  filters: Filter<T>[];
+export type Search = {
+  filters: Filter[];
   operator: "and" | "or";
 };
 
@@ -28,7 +27,7 @@ export type SearchParam = {
 
 export type ResourceFormData = Record<string, unknown>;
 
-type Resources = 
+export type Resources = 
 | Tag
 | Post
 | Category;

@@ -27,6 +27,7 @@ const stringValue = z.string().trim().min(1);
 //const dateValue = z.coerce.date();
 const emailValue = z.string().email();
 const idValue = z.number().optional();
+const numberValue = z.coerce.number();
 
 export const RegisterUser = z.object({
   //firstName: stringValue,
@@ -56,6 +57,7 @@ export const CreatePost = z.object({
   id: idValue,
   title: stringValue,
   content: stringValue,
+  likes: numberValue,
   //status: stringValue,
   //content: richText,
   //authorId: stringValue,

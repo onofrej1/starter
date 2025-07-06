@@ -1,5 +1,6 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
+import { Filter } from "./resources";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -112,5 +113,20 @@ export async function urlToFile(
   const response = await fetch(url);
   const buffer = await response.arrayBuffer();
   return new File([buffer], filename, { type: mimeType });
+}
+
+export function getValidFilters(
+  filters: Filter[],
+) {
+  return filters.filter(
+    (filter) =>
+      filter.operator === "isEmpty" ||
+      filter.operator === "isNotEmpty" ||
+      (Array.isArray(filter.value)
+        ? filter.value.length > 0
+        : filter.value !== "" &&
+          filter.value !== null &&
+          filter.value !== undefined),
+  );
 }
 

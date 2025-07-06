@@ -1,7 +1,7 @@
 import { Pagination, OrderBy, SearchParam } from "@/services";
 import { prisma } from "@/db/prisma";
-import { getWhere } from "@/lib/resources";
 import { Category } from "@/generated/prisma";
+import { applyFilters } from "@/lib/resources-filter";
 
 export const categoryService = {
   getAll: async (
@@ -16,7 +16,8 @@ export const categoryService = {
       return { [item.id]: item.desc ? "desc" : "asc" };
     });
 
-    const where = getWhere(filters);
+    const where = applyFilters(filters);
+
     const rowCount = await prisma.category.aggregate({
       where,
       _count: {

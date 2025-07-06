@@ -50,6 +50,7 @@ const post: Resource = {
   form: [
     { name: "title", type: "text", label: "Title" },
     { name: "content", type: "text", label: "Content" },
+    { name: "likes", type: "number", label: "Likes" },
     //{ name: "status", type: "text", label: "Status" },
     {
       name: "cover",
@@ -57,7 +58,7 @@ const post: Resource = {
       label: "Cover",
       //dir: 'posts',
     },
-    
+
     {
       name: "authorId",
       type: "foreignKey",
@@ -66,13 +67,13 @@ const post: Resource = {
       resource: "users",
       renderLabel: (row) => `${row.name}`,
     },
-    
+
     {
       name: "tags",
       type: "manyToMany",
       label: "Tags",
       resource: "tags",
-      field: 'id',
+      field: "id",
       renderLabel: (row) => (row as Post).title,
     },
     {
@@ -93,7 +94,7 @@ const post: Resource = {
           <Avatar>
             <AvatarImage
               referrerPolicy={"no-referrer"}
-              src={''}
+              src={""}
               className="w-10 h-10"
               width={10}
               height={10}
@@ -111,24 +112,32 @@ const post: Resource = {
       name: "title",
       header: "Title",
       filter: {
-        label: "Title", 
+        label: "Title",
         placeholder: "Search title...",
         //icon: Text,
         type: "text",
         name: "title",
       },
-      render: ({ row }) => <span className="font-semibold">{(row.original as Post).title}</span>,
+      render: ({ row }) => (
+        <span className="font-semibold">{(row.original as Post).title}</span>
+      ),
     },
     { name: "cover", header: "Cover" },
     {
       name: "enableComments",
       header: "Enable comments",
-      render: ({ row }, queryClient ) => (
+      filter: {
+        label: "Enable comments",
+        placeholder: "Search comments...",
+        type: "boolean",
+        name: "enableComments",
+      },
+      render: ({ row }, queryClient) => (
         <Switch
-          checked={false/*row.enableComments*/}
+          checked={false /*row.enableComments*/}
           onCheckedChange={async () => {
             console.log(row);
-            //await toggleEnableComments(row.id, !row.enableComments);
+            //await toggleEnableComments(row.id);
             queryClient.invalidateQueries({
               queryKey: ["getAll", "posts"],
             });
@@ -138,10 +147,20 @@ const post: Resource = {
     },
     { name: "status", header: "Status" },
     {
+      name: "likes",
+      header: "Likes",
+      filter: {
+        label: "Likes",
+        placeholder: "Search likes...",
+        type: "number",
+        name: "likes",
+      },
+    },
+    {
       name: "categories",
       header: "Categories",
       filter: {
-        label: "Category", 
+        label: "Category",
         placeholder: "Search categories...",
         //icon: Text,
 
@@ -152,16 +171,17 @@ const post: Resource = {
         search: "categories_",
       },
       render: ({ row }) => (
-        <span className="flex gap-2">          
-          {(row.original as Post & { categories: Category[] }).categories.map((category: Category) => (
-            <Badge key={category.id} variant="outline">
-              {category.name}
-            </Badge>
-          ))}
+        <span className="flex gap-2">
+          {(row.original as Post & { categories: Category[] }).categories.map(
+            (category: Category) => (
+              <Badge key={category.id} variant="outline">
+                {category.name}
+              </Badge>
+            )
+          )}
         </span>
       ),
     },
-    
   ],
 };
 export { post };

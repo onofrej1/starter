@@ -10,7 +10,7 @@ const category: Resource = {
   resource: "categories",
   menuIcon: "",
   rules: CreateCategory,
-  //advancedFilter: true,
+  advancedFilter: true,
   form: [
     { name: "name", type: "text", label: "Name" },
     { name: "description", type: "text", label: "Description" }
@@ -18,7 +18,7 @@ const category: Resource = {
   list: [
     { name: "id", header: "Id" },
     {
-      name: "title",
+      name: "name",
       header: "Name",
       filter: {
         label: "Name",

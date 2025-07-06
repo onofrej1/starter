@@ -187,6 +187,10 @@ interface TextFilterType extends BaseFilterType {
   type: "text";
 }
 
+interface NumberFilterType extends BaseFilterType {
+  type: "number";
+}
+
 interface RangeFilterType extends BaseFilterType {
   type: "range";
 }
@@ -223,8 +227,7 @@ export type FilterField =
   | MultiSelectFilterType
   | DateFilterType
   | TextFilterType
+  | NumberFilterType
   | RangeFilterType;
-
-//type DrizzleModel = any; // TODO
 
 export type { Resource, FormField };

@@ -10,10 +10,8 @@ import { ResourceContext, useContext } from "@/resource-context";
 import { getAll } from "@/actions/resources";
 import { Filter } from "@/lib/resources";
 import { OrderBy, Search } from "@/services";
-import { parseJson } from "@/lib/utils";
-import { Table as DrizzleTable } from "drizzle-orm";
+import { getValidFilters, parseJson } from "@/lib/utils";
 import { Table } from "@/components/resources/table/table";
-import { getValidFilters } from "@/lib/filter-data";
 
 export default function Resource() {
   const searchParams = useSearchParams();
@@ -39,7 +37,7 @@ export default function Resource() {
 
       if (value) {
         baseFilters.push({
-          id: field.name as keyof DrizzleTable,
+          id: field.name,
           variant: field.type,
           operator: isMultiSelect ? "eq" : "iLike",
           value: isMultiSelect ? value.split(',') : value, 
@@ -57,8 +55,8 @@ export default function Resource() {
   };
   const orderBy: OrderBy[] = parseJson(sort, []);
 
-  const filterQuery = advancedFilter ? getValidFilters(parseJson(filters, [])) : baseFilters;
-  const search: Search<DrizzleTable> = {
+  const filterQuery = advancedFilter ? getValidFilters(parseJson(filters, [])) : getValidFilters(baseFilters);
+  const search: Search = {
     filters: filterQuery,
     operator: operator as 'and' | 'or'
   };

@@ -2,6 +2,7 @@ import { Pagination, OrderBy, SearchParam } from "@/services";
 import { prisma } from "@/db/prisma";
 import { getWhere } from "@/lib/resources";
 import { Tag } from "@/generated/prisma";
+import { getWhereQuery } from "@/lib/resources-filter";
 
 export const tagService = {
   getAll: async (
@@ -16,7 +17,7 @@ export const tagService = {
       return { [item.id]: item.desc ? "desc" : "asc" };
     });
 
-    const where = getWhere(filters);
+    const where = getWhereQuery(filters);
     const rowCount = await prisma.tag.aggregate({
       where,
       _count: {

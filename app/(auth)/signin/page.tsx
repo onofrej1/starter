@@ -73,7 +73,6 @@ export default function LoginPage() {
       newUserCallbackURL: "/welcome",
       disableRedirect: true,
     });
-    console.log('d', data);
     if (data.data?.url) {
       router.push(data.data.url);
     }

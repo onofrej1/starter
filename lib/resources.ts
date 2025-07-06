@@ -1,9 +1,6 @@
-//import { FormField, TableData } from "@/types/resources";
-//import { categories, posts, tags, user } from "@/db/schema";
 import { prisma } from "@/db/prisma";
-import { FilterVariant } from "@/types/data-table";
+import { FilterOperator, FilterVariant } from "@/types/data-table";
 import { FormField } from "@/types/resources";
-import { Table } from "drizzle-orm";
 
 export const resources = {
   categories: prisma.category,
@@ -18,6 +15,8 @@ export const resources = {
   Posts = 'posts'
 }*/
 
+
+
 export type Resource = keyof typeof resources | "users";
 
 export function getOrderBy(input: string) {
@@ -29,57 +28,18 @@ export function getOrderBy(input: string) {
   return sort.map((value) => ({ [value.id]: value.desc ? "desc" : "asc" }));
 }
 
-export type FilterOld = {
-  id: string;
+export type Filter = {
   value: string | string[];
-  operator: string;
+  operator: FilterOperator;
   variant: FilterVariant;
   search: string;
+  id: string; //Extract<keyof T, string>;
 };
 
-export type Filter<T = Table> = {
-  value: string | string[];
-  operator: string;
-  variant: FilterVariant;
-  search: string;
-  id: Extract<keyof T, string>;
-};
-
-export function getRelations(query?: string | string[]) {
-  if (!query) {
-    return {};
-  }
-  if (typeof query === "string") {
-    return reduceQuery(query.split(","));
-  }
-  return reduceQuery(query);
-}
-
-export function reduceQuery(query: string[]) {
-  return query.reduce((result, model) => {
+export function arrayToQuery(arr: string[]) {
+  return arr.reduce((result, model) => {
     result[model] = true;
     return result;
-  }, {} as Record<string, boolean>);
-}
-
-/*export function getWhere(where: Record<string, any>) {
-  return Object.keys(where).reduce((acc, k) => {
-    const value = where[k];
-    if (value !== "") {
-      const [op, val] = value.split(",");
-      acc[k] = { [op]: val };
-    }
-    return acc;
-  }, {} as Record<string, unknown>);
-}*/
-
-export function getInclude(includeModels: string) {
-  if (!includeModels) {
-    return {};
-  }
-  return includeModels.split(",").reduce((acc, model) => {
-    acc[model] = true;
-    return acc;
   }, {} as Record<string, true>);
 }
 
@@ -88,7 +48,7 @@ type BaseEntity = {
   [key: string]: unknown,
 }
 
-function getConnectValues(
+function valuesToConnect(
   oldValues: BaseEntity[] = [],
   newValues: BaseEntity[]
 ) {
@@ -97,6 +57,7 @@ function getConnectValues(
   }
 
   const newIds = new Set(newValues.map((item) => item.id));
+  const oldIds = new Set(oldValues.map((item) => item.id));
 
   const connect = Array.from(newIds)
     .filter((id) => !oldIds.has(id))
@@ -108,7 +69,6 @@ function getConnectValues(
     };
   }
 
-  const oldIds = new Set(oldValues.map((item) => item.id));
   const disconnect = Array.from(oldIds)
     .filter((id) => !newIds.has(id))
     .map((id) => ({ id }));
@@ -126,32 +86,32 @@ export function setRelations(
   oldData: Data | null,
   fields: FormField[],
 ) {
-  const newData = {...data};
+  //const newData = {...data};
   for (const field of fields) {
     const key = field.name;
     if (field.type === "foreignKey") {
-      if (newData[key]) {
-        newData[field.relation!] = { connect: { id: newData[key] } };
+      if (data[key]) {
+        data[field.relation!] = { connect: { id: data[key] } };
       } else {
-        newData[field.relation!] = { disconnect: true };
+        data[field.relation!] = { disconnect: true };
       }
-      delete newData[key];
+      delete data[key];
     }
 
     if (field.type === "manyToMany") {
-      const values = (newData[key] as number[])
+      const values = (data[key] as number[])
         .filter(Boolean)
         .map((value: number) => ({ id: value }));
 
       const oldValues = oldData?.[key] as BaseEntity[];
 
       if (values && values.length > 0) {
-        newData[key] = getConnectValues(oldValues, values);
+        data[key] = valuesToConnect(oldValues, values);
       } else {
         if (oldData?.id) {
-          newData[key] = { set: [] }
+          data[key] = { set: [] }
         } else {
-          delete newData[key];
+          delete data[key];
         }
       }
     }
