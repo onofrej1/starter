@@ -1,6 +1,6 @@
 import { Pagination, OrderBy, SearchParam } from "@/services";
 import { prisma } from "@/db/prisma";
-import { getInclude, getWhere } from "@/lib/resources";
+import { getWhere } from "@/lib/resources";
 import { Category } from "@/generated/prisma";
 
 export const categoryService = {
@@ -8,7 +8,7 @@ export const categoryService = {
     pagination: Pagination,
     search: SearchParam,
     orderBy: OrderBy[]
-  ) => {
+  ): Promise<[Category[], number]> => {
     const { limit, offset } = pagination;
     const { filters /*, operator*/ } = search;
 
@@ -37,21 +37,17 @@ export const categoryService = {
   },
 
   get: async (id: number) => {
-    const data = await prisma.post.findFirst({
+    return await prisma.category.findFirst({
       where: { id: Number(id) },
-      include: getInclude(""),
     });
-    return data;
   },
 
   upsert: async (data: Category) => {
-    await prisma.category.upsert({
-      where: {
-        id: data.id
-      },
-      update: data,
-      create: data,
-    });
+    if (data.id) {
+      await prisma.category.update({ where: { id: data.id }, data });
+    } else {
+      await prisma.category.create({ data });
+    }
   },
 
   /*create: async (data: Category) => {
@@ -68,8 +64,8 @@ export const categoryService = {
 
   getOptions: async () => {
     const categories = await prisma.category.findMany();
-  
-    return categories.map(category => ({
+
+    return categories.map((category) => ({
       value: category.id,
       label: category.name,
     }));

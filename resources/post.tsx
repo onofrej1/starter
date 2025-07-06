@@ -1,9 +1,8 @@
 //import { toggleEnableComments, updateStatus } from "@/actions/posts";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-//import { Badge } from "@/components/ui/badge";
-//import { Badge } from "@/components/ui/badge";
+import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
-import { Post } from "@/generated/prisma";
+import { Category, Post, User } from "@/generated/prisma";
 //import { Post } from "@/db/schema";
 //import { PostWithCategory } from "@/db/schema/posts";
 //import { posts } from "@/db/schema";
@@ -58,36 +57,31 @@ const post: Resource = {
       label: "Cover",
       //dir: 'posts',
     },
+    
     {
-      name: "categoryId",
+      name: "authorId",
       type: "foreignKey",
-      relation: "category",
-      label: "Category",
-      resource: "categories",
-      renderLabel: (row) => `${row.name}`,
-    },
-    {
-      name: "userId",
-      type: "foreignKey",
-      relation: "user",
-      label: "User",
+      relation: "author",
+      label: "Author",
       resource: "users",
       renderLabel: (row) => `${row.name}`,
     },
-    /*{
-      name: "categories",
-      type: "manyToMany",
-      label: "Categories",
-      resource: "categories",
-      renderLabel: (row) => row.title,
-    },*/
+    
     {
       name: "tags",
       type: "manyToMany",
       label: "Tags",
       resource: "tags",
-      field: 'tagId',
+      field: 'id',
       renderLabel: (row) => (row as Post).title,
+    },
+    {
+      name: "categories",
+      type: "manyToMany",
+      label: "Category",
+      resource: "categories",
+      field: "id",
+      renderLabel: (row) => `${row.name}`,
     },
   ],
   list: [
@@ -105,7 +99,7 @@ const post: Resource = {
               height={10}
             />
             <AvatarFallback>
-              
+              {(row.original as Post & { author: User }).author.name}
               {/*row.author.lastName?.[0].toUpperCase()*/}
             </AvatarFallback>
           </Avatar>
@@ -154,18 +148,16 @@ const post: Resource = {
         type: "multiSelect",
         name: "categories",
         resource: "categories",
-        //renderOption: (row: Category) => row.title,
+        //renderOption: (row: Category) => row.name,
         search: "categories_",
       },
       render: ({ row }) => (
-        <span className="flex gap-2">
-          {(row.original as any).category.name}
-
-          {/*(row.original as Post).categories?.map((category: Category) => (
+        <span className="flex gap-2">          
+          {(row.original as Post & { categories: Category[] }).categories.map((category: Category) => (
             <Badge key={category.id} variant="outline">
-              {category.title}
+              {category.name}
             </Badge>
-          ))*/}
+          ))}
         </span>
       ),
     },

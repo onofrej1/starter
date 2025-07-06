@@ -1,14 +1,14 @@
 import { Pagination, OrderBy, SearchParam } from "@/services";
 import { prisma } from "@/db/prisma";
 import { getWhere } from "@/lib/resources";
-import { Tag } from "@/generated/prisma";
+import { User } from "@/generated/prisma";
 
-export const tagService = {
+export const userService = {
   getAll: async (
     pagination: Pagination,
     search: SearchParam,
     orderBy: OrderBy[]
-  ): Promise<[Tag[], number]> => {
+  ): Promise<[User[], number]> => {
     const { limit, offset } = pagination;
     const { filters /*, operator*/ } = search;
 
@@ -17,7 +17,7 @@ export const tagService = {
     });
 
     const where = getWhere(filters);
-    const rowCount = await prisma.tag.aggregate({
+    const rowCount = await prisma.user.aggregate({
       where,
       _count: {
         id: true,
@@ -26,7 +26,7 @@ export const tagService = {
 
     const pageCount = Math.ceil(rowCount._count.id / Number(limit));
 
-    const data = await prisma.tag.findMany({
+    const data = await prisma.user.findMany({
       take: limit,
       skip: offset,
       orderBy: orderByQuery,
@@ -36,38 +36,30 @@ export const tagService = {
     return [data, pageCount];
   },
 
-  get: async (id: number) => {
-    return await prisma.tag.findFirst({
-      where: { id: Number(id) },
+  get: async (id: string) => {
+    return await prisma.user.findFirst({
+      where: { id },
     });
   },
 
-  upsert: async (data: Tag) => {
+  upsert: async (data: User) => {
     if (data.id) {
-      await prisma.tag.update({ where: { id: data.id }, data });
+      await prisma.user.update({ where: { id: data.id }, data });
     } else {
-      await prisma.tag.create({ data });
+      await prisma.user.create({ data });
     }
   },
 
-  /*create: async (data: Tag) => {
-    await prisma.tag.create({ data });
-  },
-
-  update: async (data: Tag) => {
-    await prisma.tag.update({ where: { id: data.id }, data });
-  },*/
-
-  delete: async (id: number[]) => {
-    await prisma.tag.deleteMany({ where: { id: { in: id } } });
+  delete: async (id: string[]) => {
+    await prisma.user.deleteMany({ where: { id: { in: id } } });
   },
 
   getOptions: async () => {
-    const tags = await prisma.tag.findMany();
+    const categories = await prisma.user.findMany();
 
-    return tags.map((tag) => ({
-      value: tag.id,
-      label: tag.title,
+    return categories.map((user) => ({
+      value: user.id,
+      label: user.name,
     }));
   },
 };

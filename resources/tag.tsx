@@ -9,19 +9,22 @@ const tag: Resource = {
   resource: "tags",
   menuIcon: "",
   rules: CreateTag,
-  form: [{ name: "title", type: "text", label: "Title" }],
+  form: [
+    { name: "title", type: "text", label: "Title" },
+    { name: "description", type: "text", label: "Description" },
+  ],
   list: [
-    { 
-      name: "id", 
+    {
+      name: "id",
       header: "Id",
       render: ({ row, cell }) => {
         return (
           <div className="flex items-center gap-3">
-            {cell.getValue<string>()} { (row.original as Tag).slug }
+            {cell.getValue<string>()} {(row.original as Tag).slug}
           </div>
-        )
+        );
       },
-     },
+    },
     { name: "title", header: "Title" },
   ],
 };

@@ -8,6 +8,7 @@ import {
   UpsertData,
   Search,
 } from "@/services";
+import { userService } from "@/services/user-service";
 
 export async function getAll(
   resource: Resource,
@@ -19,10 +20,14 @@ export async function getAll(
 }
 
 export async function get(resource: Resource, id: number) {
-  return getDataService(resource).get(id);
+  return await getDataService(resource).get(id);
 }
 
 export async function getOptions(resource: Resource) {
+  if (resource === 'users') {
+    return userService.getOptions();
+  }
+  
   const options = await getDataService(resource).getOptions();
   
   return options.map((option) => ({

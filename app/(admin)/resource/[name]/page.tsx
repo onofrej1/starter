@@ -107,11 +107,11 @@ export default function Resource() {
           <Table dataPromise={promise} />
         </React.Suspense>
 
-        <ResourceForm
+        {openAddItem && <ResourceForm
           key="addResource"
           open={openAddItem}
           onOpenChange={() => setOpenAddItem(false)}
-        />      
+        />}  
       </div>
     </div>
   );

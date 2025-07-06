@@ -1,14 +1,15 @@
 import { Pagination, OrderBy, SearchParam } from "@/services";
 import { prisma } from "@/db/prisma";
-import { getInclude, getWhere } from "@/lib/resources";
+import { getInclude, getWhere, setRelations } from "@/lib/resources";
 import { Post } from "@/generated/prisma";
+import { post } from "@/resources/post";
 
 export const postService = {
   getAll: async (
     pagination: Pagination,
     search: SearchParam,
     orderBy: OrderBy[]
-  ) => {
+  ): Promise<[Post[], number]> => {
     const { limit, offset } = pagination;
     const { filters /*, operator*/ } = search;
 
@@ -31,6 +32,7 @@ export const postService = {
       skip: offset,
       orderBy: orderByQuery,
       where,
+      include: getInclude("author,categories,tags"),
     });
 
     return [data, pageCount];
@@ -39,28 +41,25 @@ export const postService = {
   get: async (id: number) => {
     const data = await prisma.post.findFirst({
       where: { id: Number(id) },
-      include: getInclude(""),
+      include: getInclude("author,categories,tags"),
     });
     return data;
   },
 
   upsert: async (data: Post) => {
-    await prisma.post.upsert({
-      where: {
-        id: data.id,
-      },
-      update: data,
-      create: data,
-    });
-  },
+    const oldData = await postService.get(data.id);
+    console.log("debug:", data, oldData);
 
-  /*create: async (data: Post) => {
-    await prisma.post.create({ data });
-  },
+    setRelations(data, oldData!, post.form);
 
-  update: async (data: Post) => {
-    await prisma.post.update({ where: { id: data.id }, data });
-  },*/
+    console.log("debug 2:", data);
+    if (data.id) {
+      const { id, ...rest } = data;
+      await prisma.post.update({ where: { id }, data: rest });
+    } else {
+      await prisma.post.create({ data });
+    }
+  },
 
   delete: async (id: number[]) => {
     await prisma.post.deleteMany({ where: { id: { in: id } } });

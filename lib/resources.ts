@@ -3,7 +3,7 @@
 import { prisma } from "@/db/prisma";
 import { FilterVariant } from "@/types/data-table";
 import { FormField } from "@/types/resources";
-import { AnyColumn, eq, ilike, ne, Table } from "drizzle-orm";
+import { Table } from "drizzle-orm";
 
 export const resources = {
   categories: prisma.category,
@@ -18,7 +18,7 @@ export const resources = {
   Posts = 'posts'
 }*/
 
-export type Resource = keyof typeof resources | 'users';
+export type Resource = keyof typeof resources | "users";
 
 export function getOrderBy(input: string) {
   if (!input) {
@@ -45,44 +45,6 @@ export type Filter<T = Table> = {
   id: Extract<keyof T, string>;
 };
 
-export function searchResource(resource: Table, filters: Filter[]) {
-  //const filters: Filter[] /*Filter<TableData>[]*/ = JSON.parse(input);
-  const query: any[] = []; // eslint-disable-line
-
-  const oper: Record<string, typeof eq | typeof ne | typeof ilike> = {
-    eq,
-    ne,
-    ilike,
-  };
-
-  filters.forEach((filter) => {
-    let where = {};
-    let value = filter.value;
-    const operator = filter.operator;
-    const key = filter.id; //keyof InferSelectModel<typeof resource>;
-
-    if (["text"].includes(filter.variant)) {
-      if (value) {
-        value = operator === "ilike" ? "%" + value + "%" : value;
-        // @ts-expect-error eee
-        where = oper[operator](resource[key] as AnyColumn, value);
-        query.push(where);
-      }
-    }
-
-    if (["multiSelect"].includes(filter.variant)) {
-      if (value) {
-        value = operator === "ilike" ? "%" + value + "%" : value;
-        // @ts-expect-error eee
-        where = oper[operator](resource[filter.id], value);
-        query.push(where);
-      }
-    }
-  });
-  console.log("query", query);
-  return query;
-}
-
 export function getRelations(query?: string | string[]) {
   if (!query) {
     return {};
@@ -100,7 +62,7 @@ export function reduceQuery(query: string[]) {
   }, {} as Record<string, boolean>);
 }
 
-export function getWhere(where: Record<string, any>) {
+/*export function getWhere(where: Record<string, any>) {
   return Object.keys(where).reduce((acc, k) => {
     const value = where[k];
     if (value !== "") {
@@ -109,7 +71,7 @@ export function getWhere(where: Record<string, any>) {
     }
     return acc;
   }, {} as Record<string, unknown>);
-}
+}*/
 
 export function getInclude(includeModels: string) {
   if (!includeModels) {
@@ -121,33 +83,75 @@ export function getInclude(includeModels: string) {
   }, {} as Record<string, true>);
 }
 
-export function setRelations(
-  //data: Record<string, Record<string, string | boolean | { id: any } | string[]>>,
-  data: any,
-  fields: FormField[],
-  isUpdate: boolean = false
+type BaseEntity = {
+  id: number | string;
+  [key: string]: unknown,
+}
+
+function getConnectValues(
+  oldValues: BaseEntity[] = [],
+  newValues: BaseEntity[]
 ) {
+  if (newValues.length === 0) {
+    return { set: [] };
+  }
+
+  const newIds = new Set(newValues.map((item) => item.id));
+
+  const connect = Array.from(newIds)
+    .filter((id) => !oldIds.has(id))
+    .map((id) => ({ id }));
+
+  if (oldValues.length === 0) {
+    return {
+      connect,
+    };
+  }
+
+  const oldIds = new Set(oldValues.map((item) => item.id));
+  const disconnect = Array.from(oldIds)
+    .filter((id) => !newIds.has(id))
+    .map((id) => ({ id }));
+
+  return {
+    connect,
+    disconnect,
+  };
+}
+
+type Data = Record<string, unknown>;
+
+export function setRelations(
+  data: Data,
+  oldData: Data | null,
+  fields: FormField[],
+) {
+  const newData = {...data};
   for (const field of fields) {
+    const key = field.name;
     if (field.type === "foreignKey") {
-      if (data[field.name]) {
-        data[field.relation!] = { connect: { id: data[field.name] } };
+      if (newData[key]) {
+        newData[field.relation!] = { connect: { id: newData[key] } };
       } else {
-        data[field.relation!] = { disconnect: true };
+        newData[field.relation!] = { disconnect: true };
       }
-      delete data[field.name!];
+      delete newData[key];
     }
 
     if (field.type === "manyToMany") {
-      const values = data[field.name]
+      const values = (newData[key] as number[])
         .filter(Boolean)
         .map((value: number) => ({ id: value }));
+
+      const oldValues = oldData?.[key] as BaseEntity[];
+
       if (values && values.length > 0) {
-        data[field.name] = { connect: values };
+        newData[key] = getConnectValues(oldValues, values);
       } else {
-        if (isUpdate) {
-          data[field.name] = { set: [] };
+        if (oldData?.id) {
+          newData[key] = { set: [] }
         } else {
-          delete data[field.name];
+          delete newData[key];
         }
       }
     }

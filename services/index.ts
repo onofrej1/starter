@@ -42,11 +42,13 @@ type Service =
   | typeof categoryService
   | typeof tagService
   | typeof postService;
+  //| typeof userService;
 
 const services = new Map<Resource, Service>([
   ["categories", categoryService],
   ["tags", tagService],
   ["posts", postService],
+  //["users", userService]
 ]);
 
 export function getDataService(resource: Resource) {
