@@ -19,6 +19,7 @@ export const postService = {
     });
 
     const where = applyFilters(filters);
+    console.log('where', where);
     const rowCount = await prisma.post.aggregate({
       where,
       _count: {
@@ -50,6 +51,7 @@ export const postService = {
   upsert: async (data: Post) => {
     const oldData = await postService.get(data.id);
     setRelations(data, oldData!, post.form);
+    console.log('data', data);
 
     if (data.id) {
       const { id, ...rest } = data;

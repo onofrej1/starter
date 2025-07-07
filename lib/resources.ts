@@ -15,18 +15,7 @@ export const resources = {
   Posts = 'posts'
 }*/
 
-
-
 export type Resource = keyof typeof resources | "users";
-
-export function getOrderBy(input: string) {
-  if (!input) {
-    return [{ id: "asc" }];
-  }
-
-  const sort: { id: string; desc: boolean }[] = JSON.parse(input);
-  return sort.map((value) => ({ [value.id]: value.desc ? "desc" : "asc" }));
-}
 
 export type Filter = {
   value: string | string[];
@@ -45,17 +34,13 @@ export function arrayToQuery(arr: string[]) {
 
 type BaseEntity = {
   id: number | string;
-  [key: string]: unknown,
-}
+  [key: string]: unknown;
+};
 
 function valuesToConnect(
   oldValues: BaseEntity[] = [],
   newValues: BaseEntity[]
 ) {
-  if (newValues.length === 0) {
-    return { set: [] };
-  }
-
   const newIds = new Set(newValues.map((item) => item.id));
   const oldIds = new Set(oldValues.map((item) => item.id));
 
@@ -84,16 +69,15 @@ type Data = Record<string, unknown>;
 export function setRelations(
   data: Data,
   oldData: Data | null,
-  fields: FormField[],
+  fields: FormField[]
 ) {
-  //const newData = {...data};
   for (const field of fields) {
     const key = field.name;
     if (field.type === "foreignKey") {
       if (data[key]) {
-        data[field.relation!] = { connect: { id: data[key] } };
+        data[field.relation] = { connect: { id: data[key] } };
       } else {
-        data[field.relation!] = { disconnect: true };
+        data[field.relation] = { disconnect: true };
       }
       delete data[key];
     }
@@ -109,7 +93,7 @@ export function setRelations(
         data[key] = valuesToConnect(oldValues, values);
       } else {
         if (oldData?.id) {
-          data[key] = { set: [] }
+          data[key] = { set: [] };
         } else {
           delete data[key];
         }

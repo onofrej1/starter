@@ -152,8 +152,18 @@ const post: Resource = {
       filter: {
         label: "Likes",
         placeholder: "Search likes...",
-        type: "number",
+        type: "range",
         name: "likes",
+      },
+    },
+    {
+      name: "updatedAt",
+      header: "Updated at",
+      filter: {
+        label: "Updated At",
+        placeholder: "Updated at...",
+        type: "date",
+        name: "updatedAt",
       },
     },
     {
