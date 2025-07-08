@@ -10,6 +10,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Edit, Trash } from "lucide-react";
 import { DataTableRowAction } from "@/types/data-table";
 import { QueryClient } from "@tanstack/react-query";
+import { getOptions } from "@/actions/resources";
 
 interface GetColumnsProps {
   resource: string;
@@ -141,7 +142,7 @@ export async function getColumns({
             field.enableSort === undefined ? true : field.enableSort,
           enableHiding:
             field.enableHide === undefined ? true : field.enableHide,
-          enableColumnFilter: true,
+          enableColumnFilter: !!field.enableColumnFilter,
         } as ColumnDef<TableData>;
 
         if (field.filter) {
@@ -149,16 +150,18 @@ export async function getColumns({
           const meta: ColumnMeta<TableData, unknown> = filter;
           meta.variant = filter.type;
 
-          if (filter.type === "multiSelect") {
-            /*const optionsData = await queryClient.fetchQuery({
-            queryKey: ["getOptions", filter.resource],
-            queryFn: () => getResource() /*getOptions(filter.resource!),
-          });
-          const options = optionsData.map((o: any) => ({
-            label: filter.renderOption(o),
-            value: o.id,
-          }));
-          filter.options = options;*/
+          if (filter.type === 'select' || filter.type === 'multiSelect') {
+            const optionsData = await queryClient.fetchQuery({
+              queryKey: ["getOptions", filter.resource],
+              queryFn: () => getOptions(filter.resource!),
+            });
+            const options = optionsData.map((option) => ({
+              label: filter.renderOption
+                ? filter.renderOption(option)
+                : option.label,
+              value: option.value,
+            }));
+            meta.options = options;
           }
           column.meta = meta;
         }

@@ -111,6 +111,7 @@ const post: Resource = {
     {
       name: "title",
       header: "Title",
+      enableColumnFilter: true,
       filter: {
         label: "Title",
         placeholder: "Search title...",
@@ -126,6 +127,7 @@ const post: Resource = {
     {
       name: "enableComments",
       header: "Enable comments",
+      enableColumnFilter: true,
       filter: {
         label: "Enable comments",
         placeholder: "Search comments...",
@@ -149,16 +151,18 @@ const post: Resource = {
     {
       name: "likes",
       header: "Likes",
+      enableColumnFilter: true,
       filter: {
         label: "Likes",
         placeholder: "Search likes...",
-        type: "range",
+        type: "number",
         name: "likes",
       },
     },
     {
       name: "updatedAt",
       header: "Updated at",
+      enableColumnFilter: true,
       filter: {
         label: "Updated At",
         placeholder: "Updated at...",
@@ -169,12 +173,13 @@ const post: Resource = {
     {
       name: "categories",
       header: "Categories",
+      enableColumnFilter: true,
       filter: {
         label: "Category",
         placeholder: "Search categories...",
         //icon: Text,
 
-        type: "multiSelect",
+        type: "select",
         name: "categories",
         resource: "categories",
         //renderOption: (row: Category) => row.name,

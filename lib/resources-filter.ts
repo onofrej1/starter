@@ -1,4 +1,3 @@
-//import { FilterOperator } from "@/types/data-table";
 import { Filter } from "./resources";
 
 type OperatorMap = {
@@ -21,7 +20,7 @@ export function applyFilters(filters: Filter[]) {
   };
 
   filters.forEach((filter) => {
-    let value = filter.value;
+    const value = filter.value;
     const operator = filter.operator as keyof OperatorMap;
 
     if (filter.variant === "text") {
@@ -46,23 +45,6 @@ export function applyFilters(filters: Filter[]) {
     }
 
     if (filter.variant === "number") {
-      if (["isEmpty", "isNotEmpty"].includes(operator)) {
-        where[filter.id] = operator === "isEmpty" ? null : { not: null };
-      } else {
-        const operators: Partial<OperatorMap> = {
-          eq: "equals",
-          ne: "not",
-          lt: "lt",
-          lte: "lte",
-          gt: "gt",
-          gte: "gte",
-        };
-        const key = operators[operator]!;
-        where[filter.id] = { [key]: Number(value) };
-      }
-    }
-
-    if (filter.variant === "range") {
       if (["isEmpty", "isNotEmpty"].includes(operator)) {
         where[filter.id] = operator === "isEmpty" ? null : { not: null };
       } else if (operator === "isBetween") {
@@ -114,6 +96,20 @@ export function applyFilters(filters: Filter[]) {
     if (filter.variant === "date") {
       if (["isEmpty", "isNotEmpty"].includes(operator)) {
         //where[filter.id] = operator === "isEmpty" ? null : { not: null };
+      } else if (
+        operator === "isBetween" &&
+        Array.isArray(filter.value) &&
+        filter.value.length === 2
+      ) {
+        const startDate = new Date(Number(filter.value[0]));
+        startDate.setHours(0, 0, 0, 0);
+        const endDate = new Date(Number(filter.value[1]));
+        endDate.setHours(23, 59, 59, 999);
+
+        (where["AND"] as Record<string, unknown>)[filter.id] = {
+          gte: startDate,
+          lte: endDate,
+        };
       } else {
         const operators: Partial<OperatorMap> = {
           eq: "equals",
@@ -151,50 +147,25 @@ export function applyFilters(filters: Filter[]) {
       }
     }
 
-    if (filter.variant === "multiSelect") {
-      const [key, op] = filter.search.split("_");
-      const isManyRelation = op !== undefined;
-
-      if (["isEmpty", "isNotEmpty"].includes(operator)) {
-        if (isManyRelation) {
-          where[key] = {
-            [filter.operator === "isEmpty" ? "none" : "some"]: {},
-          };
-        } else {
-          where[key] = {
-            [filter.operator === "isEmpty" ? "isNot" : "is"]: {},
-          };
-        }
-      }
-
-      if (["eq", "ne"].includes(operator)) {
-        value = Array.isArray(value)
-          ? value.filter(Boolean).map((v: any) => parseFloat(v) || v)
-          : value
-          ? [parseFloat(value) || value]
-          : [];
-        if (!value.length) return;
-
-        if (isManyRelation) {
-          where[key] = {
-            [filter.operator === "eq" ? "some" : "none"]: {
-              id: {
-                ["in"]: value,
-              },
-            },
-          };
-        } else {
-          where[key] = {
-            id: {
-              [filter.operator === "eq" ? "in" : "notIn"]: value,
-            },
-          };
-        }
-      }
+    if (
+      filter.variant === "date" &&
+      operator === "isBetween" &&
+      Array.isArray(filter.value) &&
+      filter.value.length === 2
+    ) {
+      const date = new Date(Number(filter.value[0]));
+      date.setHours(0, 0, 0, 0);
+      const dateEnd = new Date(Number(filter.value[1]));
+      dateEnd.setHours(23, 59, 59, 999);
+      (where["AND"] as Record<string, unknown>)[filter.id] = {
+        gte: date,
+        lte: dateEnd,
+      };
     }
 
-    if (filter.variant === "select") {
-      const [key, op] = filter.search.split("_");
+    if (["multiSelect", "select"].includes(filter.variant)) {
+      console.log('f', filter);
+      const [key, op] = 'categories_'.split('_'); //filter.search.split("_");
       const isManyRelation = op !== undefined;
 
       if (["isEmpty", "isNotEmpty"].includes(operator)) {
@@ -209,31 +180,33 @@ export function applyFilters(filters: Filter[]) {
         }
       }
 
-      if (["eq", "ne"].includes(operator)) {
-        value = Array.isArray(value)
-          ? value.filter(Boolean).map((v: any) => parseFloat(v) || v)
+      if (["inArray", "notInArray", "eq", "ne"].includes(operator)) {
+        const arrayValue = Array.isArray(value)
+          ? value.map((v) => parseFloat(v) || v)
           : value
           ? [parseFloat(value) || value]
           : [];
-        if (!value.length) return;
 
         if (isManyRelation) {
+          const columnFilter = ['inArray', 'eq'].includes(filter.operator) ? "some" : "none";
           where[key] = {
-            [filter.operator === "eq" ? "some" : "none"]: {
+            [columnFilter]: {
               id: {
-                ["in"]: value,
+                ["in"]: arrayValue,
               },
             },
           };
         } else {
+          const columnFilter = ['inArray', 'eq'].includes(filter.operator) ? "in" : "notIn";
           where[key] = {
             id: {
-              [filter.operator === "eq" ? "in" : "notIn"]: value,
+              [columnFilter]: arrayValue,
             },
           };
         }
       }
     }
   });
+
   return where;
 }

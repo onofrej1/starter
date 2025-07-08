@@ -6,14 +6,7 @@ export const resources = {
   categories: prisma.category,
   tags: prisma.tag,
   posts: prisma.post,
-  //users: user,
 };
-
-/*export enum Resource {
-  Categories = 'categories',
-  Tags = 'tags',
-  Posts = 'posts'
-}*/
 
 export type Resource = keyof typeof resources | "users";
 

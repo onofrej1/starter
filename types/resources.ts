@@ -39,6 +39,7 @@ export interface TableHeader {
   filter?: FilterField, //Filter; //todo
   enableSort?: boolean;
   enableHide?: boolean;
+  enableColumnFilter?: boolean;
   render?: (props: CellContext<TableData, unknown>, queryClient: QueryClient) => JSX.Element,
 }
 
@@ -191,10 +192,6 @@ interface NumberFilterType extends BaseFilterType {
   type: "number";
 }
 
-interface RangeFilterType extends BaseFilterType {
-  type: "range";
-}
-
 interface DateFilterType extends BaseFilterType {
   type: "date";
 }
@@ -208,7 +205,7 @@ export interface SelectFilterType extends BaseFilterType {
   search: string;
 
   resource: ResourceName;
-  renderOption?: (data: Record<string, string>) => string | JSX.Element;
+  renderOption?: (data: Record<string, string>) => string; // | JSX.Element;
   options?: { label: string; value: string }[];
 }
 
@@ -217,7 +214,7 @@ export interface MultiSelectFilterType extends BaseFilterType {
   search: string;
 
   resource: ResourceName;
-  renderOption?: (data: Record<string, string>) => string | JSX.Element;
+  renderOption?: (data: Record<string, string>) => string; // | JSX.Element;
   options?: { label: string; value: string }[];
 }
 
@@ -227,7 +224,6 @@ export type FilterField =
   | MultiSelectFilterType
   | DateFilterType
   | TextFilterType
-  | NumberFilterType
-  | RangeFilterType;
+  | NumberFilterType;
 
 export type { Resource, FormField };
