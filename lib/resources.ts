@@ -30,7 +30,7 @@ type BaseEntity = {
   [key: string]: unknown;
 };
 
-function valuesToConnect(
+function connectData(
   oldValues: BaseEntity[] = [],
   newValues: BaseEntity[]
 ) {
@@ -83,7 +83,7 @@ export function setRelations(
       const oldValues = oldData?.[key] as BaseEntity[];
 
       if (values && values.length > 0) {
-        data[key] = valuesToConnect(oldValues, values);
+        data[key] = connectData(oldValues, values);
       } else {
         if (oldData?.id) {
           data[key] = { set: [] };

@@ -12,14 +12,15 @@ export const postService = {
     orderBy: OrderBy[]
   ): Promise<[Post[], number]> => {
     const { limit, offset } = pagination;
-    const { filters /*, operator*/ } = search;
+    const { filters, operator } = search;
 
     const orderByQuery = orderBy.map((item) => {
       return { [item.id]: item.desc ? "desc" : "asc" };
     });
 
-    const where = applyFilters(filters);
+    const where = applyFilters(filters, operator);
     console.log('where', where);
+    
     const rowCount = await prisma.post.aggregate({
       where,
       _count: {

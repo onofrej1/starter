@@ -28,7 +28,7 @@ export const dataTableConfig = {
     { label: "Is on or before", value: "lte" as const },
     { label: "Is on or after", value: "gte" as const },
     { label: "Is between", value: "isBetween" as const },
-    { label: "Is relative to today", value: "isRelativeToToday" as const },
+    //{ label: "Is relative to today", value: "isRelativeToToday" as const },
     { label: "Is empty", value: "isEmpty" as const },
     { label: "Is not empty", value: "isNotEmpty" as const },
   ],

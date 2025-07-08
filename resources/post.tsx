@@ -24,7 +24,7 @@ const post: Resource = {
   name_plural: "Posts",
   model: "post",
   resource: "posts",
-  advancedFilter: true,
+  advancedFilter: false,
   rules: CreatePost,
   menuIcon: "",
   relations: ["author", "categories", "tags"],
@@ -160,6 +160,17 @@ const post: Resource = {
       },
     },
     {
+      name: "createdAt",
+      header: "Created at",
+      enableColumnFilter: true,
+      filter: {
+        label: "Created At",
+        placeholder: "Created at...",
+        type: "date",
+        name: "createdAt",
+      },
+    },
+    {
       name: "updatedAt",
       header: "Updated at",
       enableColumnFilter: true,
@@ -179,7 +190,7 @@ const post: Resource = {
         placeholder: "Search categories...",
         //icon: Text,
 
-        type: "select",
+        type: "multiSelect",
         name: "categories",
         resource: "categories",
         //renderOption: (row: Category) => row.name,
