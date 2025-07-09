@@ -12,6 +12,7 @@ import { Filter } from "@/lib/resources";
 import { OrderBy, Search } from "@/services";
 import { getValidFilters, parseJson } from "@/lib/utils";
 import { Table } from "@/components/resources/table/table";
+import { FilterOperator } from "@/types/data-table";
 
 export default function Resource() {
   const searchParams = useSearchParams();
@@ -30,22 +31,35 @@ export default function Resource() {
   } = Object.fromEntries(searchParams.entries());
 
   const baseFilters: Filter[] = [];
-  if (!advancedFilter) {
+  //if (!advancedFilter) {
     list.map(col => col.filter).filter(f => f !== undefined).forEach((field) => {
       const value = searchParams.get(field.name);
-      const isMultiSelect = field.type === "multiSelect";
+      
+      const operators: Record<string, string> = {
+        text: 'iLike',
+        number: 'eq',
+        range: 'isBetween',
+        boolean: 'eq',
+        select: 'inArray',
+        multiSelect: 'inArray',
+        date: 'eq',
+        dateRange: 'isBetween',
+      }
+
+      const isArray = ['inArray', 'isBetween'].includes(operators[field.type]);
+      const isMultiSelect = field.type === 'multiSelect';
 
       if (value) {
         baseFilters.push({
           id: field.name,
           variant: field.type,
-          operator: isMultiSelect ? "eq" : "iLike",
-          value: isMultiSelect ? value.split(',') : value, 
+          operator: operators[field.type] as FilterOperator,
+          value: isArray ? value.split(',') : value, 
           search: isMultiSelect ? field.search : field.name,          
         });
       }
     });
-  }
+  //}
 
   const offset = (Number(page) || 1) - 1;
   const limit = Number(perPage) || 10;

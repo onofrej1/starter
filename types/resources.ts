@@ -192,6 +192,14 @@ interface NumberFilterType extends BaseFilterType {
   type: "number";
 }
 
+interface RangeFilterType extends BaseFilterType {
+  type: "range";
+}
+
+interface DateRangeFilterType extends BaseFilterType {
+  type: "dateRange";
+}
+
 interface DateFilterType extends BaseFilterType {
   type: "date";
 }
@@ -224,6 +232,8 @@ export type FilterField =
   | MultiSelectFilterType
   | DateFilterType
   | TextFilterType
-  | NumberFilterType;
+  | NumberFilterType
+  | RangeFilterType
+  | DateRangeFilterType;
 
 export type { Resource, FormField };

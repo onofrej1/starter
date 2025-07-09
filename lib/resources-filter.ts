@@ -44,7 +44,7 @@ export function applyFilters(filters: Filter[], operator: 'and' | 'or') {
       }
     }
 
-    if (filter.variant === "number") {
+    if (filter.variant === "number" || filter.variant === 'range') {
       if (["isEmpty", "isNotEmpty"].includes(operator)) {
         where[filter.id] = operator === "isEmpty" ? null : { not: null };
       } else if (operator === "isBetween") {
@@ -94,7 +94,7 @@ export function applyFilters(filters: Filter[], operator: 'and' | 'or') {
       where[filter.id] = { [key]: value === "false" ? false : !!value };
     }
 
-    if (filter.variant === "date") {
+    if (filter.variant === "date" || filter.variant === 'dateRange') {
       if (["isEmpty", "isNotEmpty"].includes(operator)) {
         where[filter.id] = operator === "isEmpty" ? null : { not: null };
       } else if (
