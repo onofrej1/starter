@@ -5,6 +5,8 @@ import type * as React from "react";
 
 import { DataTableViewOptions } from "@/components/data-table/data-table-view-options";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Plus } from "lucide-react";
 
 interface DataTableAdvancedToolbarProps<TData>
   extends React.ComponentProps<"div"> {
@@ -27,10 +29,7 @@ export function DataTableAdvancedToolbar<TData>({
       )}
       {...props}
     >
-      <div className="flex flex-1 flex-wrap items-center gap-2">{children}</div>
-      <div className="flex items-center gap-2">
-        <DataTableViewOptions table={table} />
-      </div>
+      {children}
     </div>
   );
 }

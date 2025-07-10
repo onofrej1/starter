@@ -1,7 +1,7 @@
 "use client";
 
 import type { Column, Table } from "@tanstack/react-table";
-import { X } from "lucide-react";
+import { Plus, X } from "lucide-react";
 import * as React from "react";
 
 import { DataTableDateFilter } from "@/components/data-table/filter/data-table-date-filter";
@@ -26,7 +26,7 @@ export function DataTableToolbar<TData>({
 
   const columns = React.useMemo(
     () => table.getAllColumns().filter((column) => column.getCanFilter()),
-    [table],
+    [table]
   );
 
   const onReset = React.useCallback(() => {
@@ -39,7 +39,7 @@ export function DataTableToolbar<TData>({
       aria-orientation="horizontal"
       className={cn(
         "flex w-full items-start justify-between gap-2 p-1",
-        className,
+        className
       )}
       {...props}
     >
@@ -61,8 +61,7 @@ export function DataTableToolbar<TData>({
         )}
       </div>
       <div className="flex items-center gap-2">
-        {children}
-        <DataTableViewOptions table={table} />
+        {children}        
       </div>
     </div>
   );

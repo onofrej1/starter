@@ -1,9 +1,20 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 import { Filter } from "./resources";
+import { format } from "date-fns";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
+}
+
+export function formatDate(date: string | Date, dateFormat?: string) {
+  if (dateFormat) {
+    return format(date instanceof Date ? date : new Date(date), dateFormat);
+  }
+  if (date instanceof Date) {
+    return date.toLocaleDateString();
+  }
+  return new Date(date).toLocaleDateString();
 }
 
 export function random(list: unknown[]) {

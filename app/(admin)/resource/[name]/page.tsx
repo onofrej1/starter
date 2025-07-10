@@ -1,10 +1,10 @@
 "use client";
 import { useSearchParams } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+//import { Button } from "@/components/ui/button";
+//import { Plus } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import React, { useState } from "react";
-import ResourceForm from "@/components/resources/form-dialog";
+import React from "react";
+//import ResourceForm from "@/components/resources/form-dialog";
 import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton";
 import { ResourceContext, useContext } from "@/resource-context";
 import { getAll } from "@/actions/resources";
@@ -16,7 +16,7 @@ import { FilterOperator } from "@/types/data-table";
 
 export default function Resource() {
   const searchParams = useSearchParams();
-  const [openAddItem, setOpenAddItem] = useState(false);
+  //const [openAddItem, setOpenAddItem] = useState(false);
 
   const {
     resource: { list, resource, advancedFilter },
@@ -31,7 +31,7 @@ export default function Resource() {
   } = Object.fromEntries(searchParams.entries());
 
   const baseFilters: Filter[] = [];
-  //if (!advancedFilter) {
+  if (!advancedFilter) {
     list.map(col => col.filter).filter(f => f !== undefined).forEach((field) => {
       const value = searchParams.get(field.name);
       
@@ -59,7 +59,7 @@ export default function Resource() {
         });
       }
     });
-  //}
+  }
 
   const offset = (Number(page) || 1) - 1;
   const limit = Number(perPage) || 10;
@@ -96,14 +96,14 @@ export default function Resource() {
   });  
   
   return (
-    <div className="w-full">
-      <div className="flex flex-row justify-end">
+    <div>
+      {/*<div className="flex flex-row justify-end">
         <form action={() => setOpenAddItem(true)}>
-          <Button variant="outline" type="submit">
+          <Button size="sm" variant="outline" type="submit">
             <Plus className="h-5 w-5" /> Add item
           </Button>
         </form>
-      </div>
+      </div>*/}
       <div>
         <React.Suspense
           fallback={
@@ -119,11 +119,11 @@ export default function Resource() {
           <Table dataPromise={promise} />
         </React.Suspense>
 
-        {openAddItem && <ResourceForm
+        {/*openAddItem && <ResourceForm
           key="addResource"
           open={openAddItem}
           onOpenChange={() => setOpenAddItem(false)}
-        />}  
+        />*/}  
       </div>
     </div>
   );

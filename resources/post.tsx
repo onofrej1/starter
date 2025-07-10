@@ -3,6 +3,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Category, Post, User } from "@/generated/prisma";
+import { formatDate } from "@/lib/utils";
 //import { Post } from "@/db/schema";
 //import { PostWithCategory } from "@/db/schema/posts";
 //import { posts } from "@/db/schema";
@@ -24,7 +25,7 @@ const post: Resource = {
   name_plural: "Posts",
   model: "post",
   resource: "posts",
-  advancedFilter: false,
+  advancedFilter: true,
   rules: CreatePost,
   menuIcon: "",
   relations: ["author", "categories", "tags"],
@@ -155,7 +156,7 @@ const post: Resource = {
       filter: {
         label: "Likes",
         placeholder: "Search likes...",
-        type: "number",
+        type: "range",
         name: "likes",
       },
     },
@@ -166,9 +167,10 @@ const post: Resource = {
       filter: {
         label: "Created At",
         placeholder: "Created at...",
-        type: "date",
+        type: "dateRange",
         name: "createdAt",
       },
+      render: ({ row }) => <span>{formatDate((row.original as Post).createdAt)}</span>
     },
     {
       name: "updatedAt",
@@ -180,6 +182,7 @@ const post: Resource = {
         type: "date",
         name: "updatedAt",
       },
+      render: ({ row }) => <span>{formatDate((row.original as Post).updatedAt)}</span>
     },
     {
       name: "categories",
