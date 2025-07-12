@@ -4,11 +4,6 @@ import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { ReactQueryProvider } from "@/react-query-provider";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/layout/app-sidebar";
-import { Breadcrumb } from "@/components/layout/breadcrumb";
-import UserNav from "@/components/layout/user-nav";
-import { Input } from "@/components/ui/input";
 
 /*const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -35,23 +30,7 @@ export default function RootLayout({
       <body>
         <ReactQueryProvider>
           <NuqsAdapter>
-            <SidebarProvider>
-              <AppSidebar />
-              <main className="w-full">
-                <div className="flex justify-between p-3  border-b">
-                  <div className="flex gap-2 items-center">
-                    <SidebarTrigger />
-                    <Breadcrumb />
-                  </div>
-                  <div className="flex gap-2">
-                    <Input placeholder="Search" />
-                    <UserNav />
-                  </div>
-                </div>
-                <div className="p-3">{children}</div>
-              </main>
-            </SidebarProvider>
-
+            {children}
             <Toaster />
           </NuqsAdapter>
         </ReactQueryProvider>
